@@ -1,0 +1,327 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 37a91cd9ab154ab0bcbce5ff60abc5c3, type: 3}
+  m_Name: PathPatternsStorage
+  m_EditorClassIdentifier: 
+  DefaultSettings:
+    LineType: 0
+    Countable: 0
+    Length: 20
+    RotationAngle: 0
+  PathPatterns:
+  - Name: Zig Zag
+    Values:
+    - LineType: 2
+      Countable: 1
+      Length: 25
+      RotationAngle: 45
+    - LineType: 2
+      Countable: 1
+      Length: 25
+      RotationAngle: -45
+    - LineType: 2
+      Countable: 1
+      Length: 25
+      RotationAngle: 45
+    - LineType: 2
+      Countable: 1
+      Length: 25
+      RotationAngle: -45
+  - Name: Easy
+    Values:
+    - LineType: 0
+      Countable: 1
+      Length: 20
+      RotationAngle: 30
+    - LineType: 2
+      Countable: 1
+      Length: 20
+      RotationAngle: -30
+    - LineType: 0
+      Countable: 1
+      Length: 20
+      RotationAngle: 30
+  - Name: Turn Left
+    Values:
+    - LineType: 0
+      Countable: 1
+      Length: 30
+      RotationAngle: -45
+    - LineType: 0
+      Countable: 1
+      Length: 20
+      RotationAngle: 0
+  - Name: Long Way
+    Values:
+    - LineType: 0
+      Countable: 1
+      Length: 40
+      RotationAngle: -15
+    - LineType: 3
+      Countable: 1
+      Length: 20
+      RotationAngle: 0
+    - LineType: 0
+      Countable: 1
+      Length: 40
+      RotationAngle: 15
+  - Name: Turn Right
+    Values:
+    - LineType: 0
+      Countable: 1
+      Length: 30
+      RotationAngle: 45
+    - LineType: 0
+      Countable: 1
+      Length: 20
+      RotationAngle: 0
+  - Name: Just Line
+    Values:
+    - LineType: 0
+      Countable: 1
+      Length: 30
+      RotationAngle: 0
+  - Name: Invisible Left
+    Values:
+    - LineType: 0
+      Countable: 1
+      Length: 20
+      RotationAngle: -15
+    - LineType: 4
+      Countable: 1
+      Length: 20
+      RotationAngle: 15
+    - LineType: 4
+      Countable: 1
+      Length: 20
+      RotationAngle: -30
+    - LineType: 0
+      Countable: 1
+      Length: 20
+      RotationAngle: 15
+  - Name: Invisible Right
+    Values:
+    - LineType: 0
+      Countable: 1
+      Length: 20
+      RotationAngle: 15
+    - LineType: 4
+      Countable: 1
+      Length: 20
+      RotationAngle: -15
+    - LineType: 4
+      Countable: 1
+      Length: 20
+      RotationAngle: 30
+    - LineType: 0
+      Countable: 1
+      Length: 20
+      RotationAngle: -15
+  - Name: Another One
+    Values:
+    - LineType: 0
+      Countable: 1
+      Length: 20
+      RotationAngle: -30
+    - LineType: 4
+      Countable: 1
+      Length: 30
+      RotationAngle: 15
+    - LineType: 1
+      Countable: 1
+      Length: 20
+      RotationAngle: -30
+    - LineType: 4
+      Countable: 1
+      Length: 30
+      RotationAngle: 30
+  - Name: Yet Another
+    Values:
+    - LineType: 3
+      Countable: 1
+      Length: 20
+      RotationAngle: 30
+    - LineType: 1
+      Countable: 1
+      Length: 30
+      RotationAngle: 0
+    - LineType: 3
+      Countable: 1
+      Length: 20
+      RotationAngle: 45
+    - LineType: 2
+      Countable: 1
+      Length: 30
+      RotationAngle: 0
+  - Name: Highway
+    Values:
+    - LineType: 1
+      Countable: 1
+      Length: 50
+      RotationAngle: 0
+  - Name: Dance
+    Values:
+    - LineType: 3
+      Countable: 1
+      Length: 20
+      RotationAngle: -15
+    - LineType: 3
+      Countable: 1
+      Length: 20
+      RotationAngle: 15
+    - LineType: 3
+      Countable: 1
+      Length: 20
+      RotationAngle: -30
+    - LineType: 3
+      Countable: 1
+      Length: 20
+      RotationAngle: 30
+  - Name: Invisible Way
+    Values:
+    - LineType: 4
+      Countable: 1
+      Length: 20
+      RotationAngle: 45
+    - LineType: 4
+      Countable: 1
+      Length: 20
+      RotationAngle: -45
+    - LineType: 4
+      Countable: 1
+      Length: 20
+      RotationAngle: 30
+    - LineType: 4
+      Countable: 1
+      Length: 20
+      RotationAngle: -30
+  - Name: Fast&Slow
+    Values:
+    - LineType: 1
+      Countable: 1
+      Length: 20
+      RotationAngle: 0
+    - LineType: 2
+      Countable: 1
+      Length: 40
+      RotationAngle: -15
+    - LineType: 1
+      Countable: 1
+      Length: 20
+      RotationAngle: 0
+    - LineType: 2
+      Countable: 1
+      Length: 40
+      RotationAngle: 30
+    - LineType: 2
+      Countable: 1
+      Length: 20
+      RotationAngle: -30
+  - Name: Long Invisible
+    Values:
+    - LineType: 4
+      Countable: 1
+      Length: 40
+      RotationAngle: -15
+    - LineType: 4
+      Countable: 1
+      Length: 40
+      RotationAngle: 15
+  - Name: Big Dance
+    Values:
+    - LineType: 0
+      Countable: 1
+      Length: 20
+      RotationAngle: 0
+    - LineType: 3
+      Countable: 1
+      Length: 20
+      RotationAngle: 30
+    - LineType: 0
+      Countable: 1
+      Length: 20
+      RotationAngle: 0
+    - LineType: 3
+      Countable: 1
+      Length: 20
+      RotationAngle: -30
+    - LineType: 3
+      Countable: 1
+      Length: 20
+      RotationAngle: 0
+    - LineType: 3
+      Countable: 1
+      Length: 20
+      RotationAngle: -30
+    - LineType: 0
+      Countable: 1
+      Length: 20
+      RotationAngle: 0
+    - LineType: 3
+      Countable: 1
+      Length: 20
+      RotationAngle: 30
+    - LineType: 0
+      Countable: 1
+      Length: 20
+      RotationAngle: 0
+  - Name: Right2Void
+    Values:
+    - LineType: 1
+      Countable: 1
+      Length: 20
+      RotationAngle: 45
+    - LineType: 4
+      Countable: 1
+      Length: 20
+      RotationAngle: 0
+    - LineType: 4
+      Countable: 1
+      Length: 20
+      RotationAngle: 30
+    - LineType: 4
+      Countable: 1
+      Length: 30
+      RotationAngle: -30
+    - LineType: 1
+      Countable: 1
+      Length: 20
+      RotationAngle: 0
+  - Name: 2CoolForU
+    Values:
+    - LineType: 1
+      Countable: 1
+      Length: 20
+      RotationAngle: 15
+    - LineType: 4
+      Countable: 1
+      Length: 40
+      RotationAngle: -15
+    - LineType: 4
+      Countable: 1
+      Length: 20
+      RotationAngle: 30
+    - LineType: 4
+      Countable: 1
+      Length: 20
+      RotationAngle: -30
+    - LineType: 3
+      Countable: 1
+      Length: 20
+      RotationAngle: 45
+    - LineType: 3
+      Countable: 1
+      Length: 20
+      RotationAngle: -45
+    - LineType: 1
+      Countable: 1
+      Length: 40
+      RotationAngle: 0

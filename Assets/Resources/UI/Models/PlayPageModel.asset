@@ -1,0 +1,14 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cb3cb3b7e276462e8c87df4ae071c215, type: 3}
+  m_Name: PlayPageModel
+  m_EditorClassIdentifier: 
+  CurrentScore: {fileID: 11400000, guid: b8ab7437c276b2241b11df64e9fa993d, type: 2}
