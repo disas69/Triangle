@@ -43,18 +43,17 @@ namespace Game.Core
             _gameSnapshot.SaveState();
 
             _gameStateMachine = CreateStateMachine();
-            _gameStateMachine.SetState(GameState.Idle);
-
             _inputProvider.PointerDown += OnPointerDown;
+
+            IdleState();
         }
 
         private StateMachine<GameState> CreateStateMachine()
         {
-            var stateMachine = new StateMachine<GameState>();
-            stateMachine.AddTransition(GameState.Idle, GameState.Idle, IdleStateHandler);
-            stateMachine.AddTransition(GameState.Idle, GameState.Play, PlayStateHandler);
-            stateMachine.AddTransition(GameState.Play, GameState.Stop, StopStateHandler);
-            stateMachine.AddTransition(GameState.Stop, GameState.Idle, IdleStateHandler);
+            var stateMachine = new StateMachine<GameState>(GameState.Idle);
+            stateMachine.AddTransition(GameState.Idle, GameState.Play, PlayState);
+            stateMachine.AddTransition(GameState.Play, GameState.Stop, StopState);
+            stateMachine.AddTransition(GameState.Stop, GameState.Idle, IdleState);
 
             return stateMachine;
         }
@@ -87,7 +86,7 @@ namespace Game.Core
             _gameSession.IncreaseScore();
         }
 
-        private void IdleStateHandler()
+        private void IdleState()
         {
             _gameSession.Idle();
             _pathController.Idle();
@@ -97,14 +96,14 @@ namespace Game.Core
             SpawnTriangle();
         }
 
-        private void PlayStateHandler()
+        private void PlayState()
         {
             _gameSession.Play();
             _pathController.Play();
             _navigationProvider.OpenScreen<PlayPage>();
         }
 
-        private void StopStateHandler()
+        private void StopState()
         {
             _gameSession.Stop();
             _pathController.Stop();

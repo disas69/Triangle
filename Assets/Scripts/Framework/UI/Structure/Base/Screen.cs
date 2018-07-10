@@ -10,6 +10,7 @@ namespace Framework.UI.Structure.Base
     {
         private CanvasGroup _canvasGroup;
         private Coroutine _transitionCoroutine;
+        private INavigationProvider _navigationProvider;
 
         [SerializeField] private bool _inTransition = true;
         [SerializeField] private bool _outTransition = true;
@@ -62,6 +63,11 @@ namespace Framework.UI.Structure.Base
             callback.SafeInvoke();
         }
 
+        public void Initialize(INavigationProvider navigationProvider)
+        {
+            _navigationProvider = navigationProvider;
+        }
+
         public virtual void OnEnter()
         {
             gameObject.SetActive(true);
@@ -79,6 +85,11 @@ namespace Framework.UI.Structure.Base
         {
         }
 
+        public virtual void Close()
+        {
+            _navigationProvider.Back();
+        }
+
         public virtual void OnExit()
         {
             this.SafeStopCoroutine(_transitionCoroutine);
@@ -86,15 +97,16 @@ namespace Framework.UI.Structure.Base
 
             if (_outTransition)
             {
-                _transitionCoroutine = StartCoroutine(OutTransition(() =>
-                {
-                    gameObject.SetActive(false);
-                }));
+                _transitionCoroutine = StartCoroutine(OutTransition(() => { gameObject.SetActive(false); }));
             }
             else
             {
                 gameObject.SetActive(false);
             }
+        }
+
+        public virtual void OnDestroy()
+        {
         }
     }
 }

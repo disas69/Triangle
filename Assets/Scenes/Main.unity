@@ -2856,6 +2856,7 @@ RectTransform:
   m_LocalScale: {x: 0, y: 0, z: 0}
   m_Children:
   - {fileID: 934690778}
+  - {fileID: 1786683527}
   - {fileID: 1913486227}
   m_Father: {fileID: 145983481}
   m_RootOrder: 1
@@ -2878,6 +2879,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _screensMapping: {fileID: 11400000, guid: a984481d8ef916042be92c13dd368772, type: 2}
   _sceensRoot: {fileID: 934690778}
+  _popupsRoot: {fileID: 1786683527}
 --- !u!1 &1113710280
 GameObject:
   m_ObjectHideFlags: 0
@@ -4652,6 +4654,39 @@ MeshFilter:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1785978206}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!1 &1786683526
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  serializedVersion: 5
+  m_Component:
+  - component: {fileID: 1786683527}
+  m_Layer: 5
+  m_Name: Popups
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &1786683527
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1786683526}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 0.99998355, y: 0.99998355, z: 0.99998355}
+  m_Children: []
+  m_Father: {fileID: 1086628307}
+  m_RootOrder: 1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: 0, y: -0.000061035156}
+  m_SizeDelta: {x: 0, y: 0}
+  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1835150577
 GameObject:
   m_ObjectHideFlags: 0
@@ -4895,7 +4930,7 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1086628307}
-  m_RootOrder: 1
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
@@ -5081,10 +5116,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 1918446902}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6ad50842673d46da938eb713867bfd6e, type: 3}
+  m_Script: {fileID: 11500000, guid: 539a5ebc5696db54e8312a5fbae84b25, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _musicStorage: {fileID: 11400000, guid: 32aa2daf9cab8654d8400a7e29174ac0, type: 2}
+  _musicStorage: {fileID: 11400000, guid: 688aa9454a68c2949b67297936bffa4c, type: 2}
   _shuffle: 1
 --- !u!1 &1920583101
 GameObject:

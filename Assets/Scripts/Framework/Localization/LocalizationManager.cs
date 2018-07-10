@@ -21,20 +21,19 @@ namespace Framework.Localization
         {
             if (_isInitialized)
             {
-                var languageData = _localizationStorage.Strings.Find(data => data.Language == _currentLanguage);
+                var languageData = _localizationStorage.LanguagesData.Find(data => data.Language == _currentLanguage);
                 if (languageData != null)
                 {
                     var keyIndex = _localizationStorage.Keys.FindIndex(k => k == key);
                     if (keyIndex >= 0)
                     {
-                        return languageData.Texts[keyIndex];
+                        return languageData.Strings[keyIndex];
                     }
                 }
             }
 
-            Debug.LogError(string.Format("Failed to find string by key \"{0}\" for language \"{1}\"",
-                key, _currentLanguage));
-            return null;
+            Debug.LogError(string.Format("Failed to find string by key \"{0}\" for language \"{1}\"", key, _currentLanguage));
+            return string.Empty;
         }
 
         private void Awake()
@@ -74,7 +73,7 @@ namespace Framework.Localization
         {
             var systemLanguage = Application.systemLanguage;
 
-            foreach (var languageData in _localizationStorage.Strings)
+            foreach (var languageData in _localizationStorage.LanguagesData)
             {
                 var language = languageData.Language;
                 if (language == systemLanguage)

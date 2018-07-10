@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Framework.Extensions;
 using Framework.UI.Configuration;
 using Framework.UI.Structure;
+using Framework.UI.Structure.Base.View;
 using UnityEngine;
 using Screen = Framework.UI.Structure.Base.Screen;
 
@@ -14,10 +15,14 @@ namespace Framework.UI
         private bool _isInitialized;
         private Dictionary<Type, Screen> _cachedScreens;
         private Dictionary<Type, ScreenSetting> _screenSettingsDictionary;
-        private Coroutine _openingCoroutine;
+        private Dictionary<Type, PopupSettings> _popupSettingsDictionary;
+        private Coroutine _screenOpeningCoroutine;
+        private Coroutine _popupShowingCoroutine;
+        private Type _previousScreenType;
 
         [SerializeField] private ScreensMapping _screensMapping;
         [SerializeField] private Transform _sceensRoot;
+        [SerializeField] private Transform _popupsRoot;
 
         public Screen CurrentScreen { get; private set; }
 
@@ -28,8 +33,32 @@ namespace Framework.UI
                 Initialize();
             }
 
-            this.SafeStopCoroutine(_openingCoroutine);
-            _openingCoroutine = StartCoroutine(OpenScreen(typeof(T)));
+            this.SafeStopCoroutine(_screenOpeningCoroutine);
+            _screenOpeningCoroutine = StartCoroutine(OpenScreen(typeof(T)));
+        }
+
+        public void ShowPopup<T>() where T : Popup
+        {
+            if (!_isInitialized)
+            {
+                Initialize();
+            }
+
+            this.SafeStopCoroutine(_popupShowingCoroutine);
+            _popupShowingCoroutine = StartCoroutine(ShowPopup(typeof(T)));
+        }
+
+        public void Back()
+        {
+            if (_previousScreenType != null)
+            {
+                this.SafeStopCoroutine(_screenOpeningCoroutine);
+                _screenOpeningCoroutine = StartCoroutine(OpenScreen(_previousScreenType));
+            }
+            else
+            {
+                Debug.LogWarning("Attempt to navigate Back when there is no previous screen");
+            }
         }
 
         private void Awake()
@@ -41,6 +70,7 @@ namespace Framework.UI
         {
             _cachedScreens = new Dictionary<Type, Screen>();
             _screenSettingsDictionary = new Dictionary<Type, ScreenSetting>(_screensMapping.ScreenSettings.Count);
+            _popupSettingsDictionary = new Dictionary<Type, PopupSettings>(_screensMapping.PopupSettings.Count);
 
             for (int i = 0; i < _screensMapping.ScreenSettings.Count; i++)
             {
@@ -51,6 +81,15 @@ namespace Framework.UI
                 }
             }
 
+            for (int i = 0; i < _screensMapping.PopupSettings.Count; i++)
+            {
+                var popupSettings = _screensMapping.PopupSettings[i];
+                if (popupSettings != null)
+                {
+                    _popupSettingsDictionary.Add(popupSettings.Popup.GetType(), popupSettings);
+                }
+            }
+
             _isInitialized = true;
         }
 
@@ -58,8 +97,9 @@ namespace Framework.UI
         {
             if (CurrentScreen != null)
             {
-                CurrentScreen.OnExit();
+                _previousScreenType = CurrentScreen.GetType();
 
+                CurrentScreen.OnExit();
                 while (CurrentScreen.IsInTransition)
                 {
                     yield return null;
@@ -84,6 +124,8 @@ namespace Framework.UI
                 if (_screenSettingsDictionary.TryGetValue(screenType, out screenSetting))
                 {
                     var screen = Instantiate(screenSetting.Screen, _sceensRoot);
+                    screen.Initialize(this);
+
                     if (screenSetting.IsCached)
                     {
                         _cachedScreens.Add(screen.GetType(), screen);
@@ -104,7 +146,22 @@ namespace Framework.UI
                 yield return null;
             }
 
-            _openingCoroutine = null;
+            _screenOpeningCoroutine = null;
+        }
+
+        private IEnumerator ShowPopup(Type popupType)
+        {
+            PopupSettings popupSettings;
+            if (_popupSettingsDictionary.TryGetValue(popupType, out popupSettings))
+            {
+                var popup = Instantiate(popupSettings.Popup, _popupsRoot);
+                popup.OnEnter();
+
+                while (popup.IsInTransition)
+                {
+                    yield return null;
+                }
+            }
         }
     }
 }

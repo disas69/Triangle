@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
-using Game.Audio.Configuration;
+using Framework.Audio.Configuration;
 using UnityEngine;
 
-namespace Game.Audio
+namespace Framework.Audio
 {
     [RequireComponent(typeof(AudioSource))]
     public class MusicPlayer : MonoBehaviour

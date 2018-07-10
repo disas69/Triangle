@@ -6,7 +6,7 @@ namespace Editor
 {
     public static class GameDataEditor
     {
-        [MenuItem("Triangle/Clear Game Data")]
+        [MenuItem("Game/Clear Data")]
         public static void ClearData()
         {
             FileUtil.DeleteFileOrDirectory(Application.persistentDataPath + "/" + GameDataKeeper.FileName);

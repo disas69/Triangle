@@ -1,34 +1,22 @@
-﻿using Framework.UI.Configuration;
+﻿using Framework.Editor;
+using Framework.UI.Configuration;
 using UnityEditor;
 using UnityEngine;
 
 namespace Framework.UI.Editor
 {
     [CustomEditor(typeof(ScreensMapping))]
-    public class ScreensMappingEditor : UnityEditor.Editor
+    public class ScreensMappingEditor : CustomEditorBase<ScreensMapping>
     {
-        private ScreensMapping _screensMapping;
-        private GUIStyle _headerStyle;
-
-        private void OnEnable()
+        protected override void DrawInspector()
         {
-            _screensMapping = target as ScreensMapping;
-            _headerStyle = new GUIStyle
-            {
-                normal = {textColor = Color.black},
-                fontStyle = FontStyle.Bold,
-                alignment = TextAnchor.MiddleLeft
-            };
-        }
+            base.DrawInspector();
 
-        public override void OnInspectorGUI()
-        {
-            EditorGUILayout.LabelField("Screens Mapping", _headerStyle);
-            var screenSettings = serializedObject.FindProperty("ScreenSettings");
-
-            EditorGUI.BeginChangeCheck();
             EditorGUILayout.BeginVertical(GUI.skin.box);
             {
+                EditorGUILayout.LabelField("Pages Mapping", HeaderStyle);
+                var screenSettings = serializedObject.FindProperty("ScreenSettings");
+
                 var count = screenSettings.arraySize;
                 for (int i = 0; i < count; i++)
                 {
@@ -38,7 +26,7 @@ namespace Framework.UI.Editor
                         var screen = element.FindPropertyRelative("Screen");
                         var isCached = element.FindPropertyRelative("IsCached");
 
-                        var screenReference = _screensMapping.ScreenSettings[i].Screen;
+                        var screenReference = Target.ScreenSettings[i].Screen;
                         var elementName = screenReference != null ? screenReference.GetType().Name : "Screen";
 
                         EditorGUILayout.BeginVertical();
@@ -50,8 +38,8 @@ namespace Framework.UI.Editor
 
                         if (GUILayout.Button("Remove", GUILayout.Width(100f)))
                         {
-                            RecordObject();
-                            _screensMapping.ScreenSettings.RemoveAt(i);
+                            RecordObject("Screens Mapping Change");
+                            Target.ScreenSettings.RemoveAt(i);
                         }
                     }
                     EditorGUILayout.EndHorizontal();
@@ -62,22 +50,52 @@ namespace Framework.UI.Editor
 
             if (GUILayout.Button("Add"))
             {
-                RecordObject();
-                _screensMapping.ScreenSettings.Add(null);
+                RecordObject("Screens Mapping Change");
+                Target.ScreenSettings.Add(null);
             }
 
-            serializedObject.ApplyModifiedProperties();
-            serializedObject.Update();
+            EditorGUILayout.LabelField("Popups Mapping", HeaderStyle);
+            var popupSettings = serializedObject.FindProperty("PopupSettings");
 
-            if (EditorGUI.EndChangeCheck())
+            if (popupSettings.arraySize > 0)
             {
-                EditorUtility.SetDirty(_screensMapping);
-            }
-        }
+                EditorGUILayout.BeginVertical(GUI.skin.box);
+                {
+                    var count = popupSettings.arraySize;
+                    for (int i = 0; i < count; i++)
+                    {
+                        EditorGUILayout.BeginHorizontal(GUI.skin.box);
+                        {
+                            var element = popupSettings.GetArrayElementAtIndex(i);
+                            var poppup = element.FindPropertyRelative("Popup");
 
-        private void RecordObject(string changeDescription = "Screens Mapping Change")
-        {
-            Undo.RecordObject(serializedObject.targetObject, changeDescription);
+                            var popupReference = Target.PopupSettings[i].Popup;
+                            var elementName = popupReference != null ? popupReference.GetType().Name : "Popup";
+
+                            EditorGUILayout.BeginVertical();
+                            {
+                                EditorGUILayout.PropertyField(poppup, new GUIContent(elementName));
+                            }
+                            EditorGUILayout.EndVertical();
+
+                            if (GUILayout.Button("Remove", GUILayout.Width(100f)))
+                            {
+                                RecordObject("Screens Mapping Change");
+                                Target.PopupSettings.RemoveAt(i);
+                            }
+                        }
+                        EditorGUILayout.EndHorizontal();
+                        EditorGUILayout.Space();
+                    }
+                }
+                EditorGUILayout.EndVertical();
+            }
+
+            if (GUILayout.Button("Add"))
+            {
+                RecordObject("Screens Mapping Change");
+                Target.PopupSettings.Add(null);
+            }
         }
     }
 }

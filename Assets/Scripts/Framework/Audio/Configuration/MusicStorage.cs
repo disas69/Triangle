@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-namespace Game.Audio.Configuration
+namespace Framework.Audio.Configuration
 {
     [CreateAssetMenu(fileName = "MusicStorage", menuName = "Audio/MusicStorage")]
     public class MusicStorage : ScriptableObject

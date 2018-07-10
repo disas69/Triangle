@@ -8,7 +8,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c521c5de0aaf405895541faf255dd5ae, type: 3}
+  m_Script: {fileID: 11500000, guid: e1bdcbae13ff92a4e969746524b38f80, type: 3}
   m_Name: MusicStorage
   m_EditorClassIdentifier: 
   MusicClips:

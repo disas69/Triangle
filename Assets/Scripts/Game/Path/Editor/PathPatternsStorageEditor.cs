@@ -1,35 +1,23 @@
-﻿using Game.Path.Configuration;
+﻿using Framework.Editor;
+using Game.Path.Configuration;
 using UnityEditor;
 using UnityEngine;
 
 namespace Game.Path.Editor
 {
     [CustomEditor(typeof(PathPatternsStorage))]
-    public class PathPatternsStorageEditor : UnityEditor.Editor
+    public class PathPatternsStorageEditor : CustomEditorBase<PathPatternsStorage>
     {
-        private PathPatternsStorage _storage;
-        private GUIStyle _headerStyle;
-
-        private void OnEnable()
+        protected override void DrawInspector()
         {
-            _storage = target as PathPatternsStorage;
-            _headerStyle = new GUIStyle
-            {
-                normal = {textColor = Color.black},
-                fontStyle = FontStyle.Bold,
-                alignment = TextAnchor.MiddleLeft
-            };
-        }
+            base.DrawInspector();
 
-        public override void OnInspectorGUI()
-        {
-            EditorGUILayout.LabelField("Default Settings", _headerStyle);
-            EditorGUI.BeginChangeCheck();
+            EditorGUILayout.LabelField("Default Settings", HeaderStyle);
 
             var defaultSettings = serializedObject.FindProperty("DefaultSettings");
             DrawSettings(defaultSettings);
 
-            EditorGUILayout.LabelField("Path Patterns", _headerStyle);
+            EditorGUILayout.LabelField("Path Patterns", HeaderStyle);
             var patterns = serializedObject.FindProperty("PathPatterns");
             var count = patterns.arraySize;
 
@@ -40,16 +28,8 @@ namespace Game.Path.Editor
 
             if (GUILayout.Button("Add New Pattern"))
             {
-                RecordObject();
-                _storage.PathPatterns.Add(new PathPattern());
-            }
-
-            serializedObject.ApplyModifiedProperties();
-            serializedObject.Update();
-
-            if (EditorGUI.EndChangeCheck())
-            {
-                EditorUtility.SetDirty(_storage);
+                RecordObject("Path Patterns Storage Change");
+                Target.PathPatterns.Add(new PathPattern());
             }
         }
 
@@ -69,8 +49,7 @@ namespace Game.Path.Editor
                         EditorGUILayout.PropertyField(patternName, GUILayout.Width(300f));
                         EditorGUIUtility.labelWidth = labelWidth;
 
-                        serializedProperty.isExpanded =
-                            GUILayout.Toggle(serializedProperty.isExpanded, "Edit", new GUIStyle(GUI.skin.button));
+                        serializedProperty.isExpanded = GUILayout.Toggle(serializedProperty.isExpanded, "Edit", new GUIStyle(GUI.skin.button));
 
                         if (GUILayout.Button("Remove"))
                         {
@@ -90,8 +69,8 @@ namespace Game.Path.Editor
 
                         if (GUILayout.Button("Add"))
                         {
-                            RecordObject();
-                            _storage.PathPatterns[index].Values.Add(new Settings());
+                            RecordObject("Path Patterns Storage Change");
+                            Target.PathPatterns[index].Values.Add(new Settings());
                         }
 
                         serializedObject.ApplyModifiedProperties();
@@ -158,19 +137,14 @@ namespace Game.Path.Editor
 
         private void RemovePattern(int index)
         {
-            RecordObject();
-            _storage.PathPatterns.RemoveAt(index);
+            RecordObject("Path Patterns Storage Change");
+            Target.PathPatterns.RemoveAt(index);
         }
 
         private void RemoveSettings(int patternIndex, int index)
         {
-            RecordObject();
-            _storage.PathPatterns[patternIndex].Values.RemoveAt(index);
-        }
-
-        private void RecordObject(string changeDescription = "Path Patterns Storage Change")
-        {
-            Undo.RecordObject(serializedObject.targetObject, changeDescription);
+            RecordObject("Path Patterns Storage Change");
+            Target.PathPatterns[patternIndex].Values.RemoveAt(index);
         }
     }
 }
