@@ -9,7 +9,7 @@ namespace Framework.Localization.Editor
         {
             var localizationStorage = serializedObject.FindProperty("_localizationStorageAsset");
             var useSystemLanguage = serializedObject.FindProperty("_useSystemLanguage");
-            var startupLanguage = serializedObject.FindProperty("_startupLanguage");
+            var startupLanguage = serializedObject.FindProperty("_language");
 
             EditorGUILayout.PropertyField(localizationStorage);
             EditorGUILayout.PropertyField(useSystemLanguage);

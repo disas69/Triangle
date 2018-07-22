@@ -36,9 +36,7 @@ namespace Game.Core
         {
             UnityEngine.Input.multiTouchEnabled = false;
 
-            _gameSession = new GameSession(_gameVariables.CurrentScore, _gameVariables.BestScore,
-                _gameEvents.Passed10LinesEvent, _gameEvents.BestScoreBeatenEvent);
-            
+            _gameSession = new GameSession(_gameVariables.CurrentScore, _gameVariables.BestScore, _gameEvents.Passed10LinesEvent, _gameEvents.BestScoreBeatenEvent);
             _gameSnapshot = new GameSnapshot(_dynamicObjects);
             _gameSnapshot.SaveState();
 

@@ -11,17 +11,17 @@ namespace Framework.Audio
         private List<AudioClip> _musicClips;
         private int _currentClipIndex;
 
-        [SerializeField] private MusicStorage _musicStorage;
+        [SerializeField] private AudioStorage _audioStorage;
         [SerializeField] private bool _shuffle;
 
         private void Awake()
         {
             _audioSource = GetComponent<AudioSource>();
-            _musicClips = new List<AudioClip>(_musicStorage.MusicClips.Count);
+            _musicClips = new List<AudioClip>(_audioStorage.AudioClips.Count);
 
-            for (int i = 0; i < _musicStorage.MusicClips.Count; i++)
+            for (int i = 0; i < _audioStorage.AudioClips.Count; i++)
             {
-                _musicClips.Add(_musicStorage.MusicClips[i]);
+                _musicClips.Add(_audioStorage.AudioClips[i].AudioClip);
             }
 
             if (_musicClips.Count > 0)

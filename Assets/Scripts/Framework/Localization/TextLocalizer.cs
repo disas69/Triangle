@@ -9,37 +9,29 @@ namespace Framework.Localization
         ToUpper,
         ToLower
     }
-    
+
     [RequireComponent(typeof(Text))]
     public class TextLocalizer : MonoBehaviour
     {
-        private SystemLanguage _currentLanguage;
+        private Text _textComponent;
 
         [HideInInspector] public string Key;
         public TextLocalizerMode Mode = TextLocalizerMode.NoMode;
 
-        private void Awake()
+        private void Start()
         {
-            Localize();
-        }
+            _textComponent = GetComponent<Text>();
 
-        private void LateUpdate()
-        {
-            if (_currentLanguage != LocalizationManager.CurrentLanguage)
-            {
-                Localize();
-            }
+            LocalizationManager.LanguageChanged += Localize;
+            Localize();
         }
 
         private void Localize()
         {
-            var textComponent = GetComponent<Text>();
-            if (textComponent != null)
+            if (_textComponent != null)
             {
-                textComponent.text = GetString(Key);
+                _textComponent.text = GetString(Key);
             }
-
-            _currentLanguage = LocalizationManager.CurrentLanguage;
         }
 
         private string GetString(string key)
@@ -57,6 +49,11 @@ namespace Framework.Localization
             }
 
             return result;
+        }
+
+        private void OnDestroy()
+        {
+            LocalizationManager.LanguageChanged -= Localize;
         }
     }
 }

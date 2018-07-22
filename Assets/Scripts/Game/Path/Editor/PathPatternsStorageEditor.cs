@@ -18,18 +18,18 @@ namespace Game.Path.Editor
             DrawSettings(defaultSettings);
 
             EditorGUILayout.LabelField("Path Patterns", HeaderStyle);
+            if (GUILayout.Button("Add New Pattern"))
+            {
+                RecordObject("Path Patterns Storage Change");
+                Target.PathPatterns.Add(new PathPattern());
+            }
+
             var patterns = serializedObject.FindProperty("PathPatterns");
             var count = patterns.arraySize;
 
             for (int i = 0; i < count; i++)
             {
                 DrawPattern(patterns.GetArrayElementAtIndex(i), i);
-            }
-
-            if (GUILayout.Button("Add New Pattern"))
-            {
-                RecordObject("Path Patterns Storage Change");
-                Target.PathPatterns.Add(new PathPattern());
             }
         }
 
@@ -60,17 +60,17 @@ namespace Game.Path.Editor
 
                     if (serializedProperty.isExpanded)
                     {
-                        EditorGUILayout.LabelField("Pattern Settings");
-                        var count = values.arraySize;
-                        for (int i = 0; i < count; i++)
-                        {
-                            DrawSettings(values.GetArrayElementAtIndex(i), index, i);
-                        }
-
+                        EditorGUILayout.LabelField("Pattern Settings", LabelStyle);
                         if (GUILayout.Button("Add"))
                         {
                             RecordObject("Path Patterns Storage Change");
                             Target.PathPatterns[index].Values.Add(new Settings());
+                        }
+
+                        var count = values.arraySize;
+                        for (int i = 0; i < count; i++)
+                        {
+                            DrawSettings(values.GetArrayElementAtIndex(i), index, i);
                         }
 
                         serializedObject.ApplyModifiedProperties();
@@ -125,7 +125,7 @@ namespace Game.Path.Editor
 
                 if (patternIndex >= 0 && index >= 0)
                 {
-                    if (GUILayout.Button("Remove", GUILayout.Width(100f)))
+                    if (GUILayout.Button("X", GUILayout.Width(20)))
                     {
                         RemoveSettings(patternIndex, index);
                     }

@@ -13,6 +13,12 @@ namespace Game.Path.Editor
             base.DrawInspector();
 
             EditorGUILayout.LabelField("Lines Prefabs", HeaderStyle);
+            if (GUILayout.Button("Add"))
+            {
+                RecordObject("Path Lines Mapping Change");
+                Target.PathLinePrefabs.Add(new PathLinePrefab());
+            }
+
             var prefabsList = serializedObject.FindProperty("PathLinePrefabs");
             var count = prefabsList.arraySize;
 
@@ -27,12 +33,6 @@ namespace Game.Path.Editor
                 }
                 EditorGUILayout.EndVertical();
             }
-
-            if (GUILayout.Button("Add"))
-            {
-                RecordObject("Path Lines Mapping Change");
-                Target.PathLinePrefabs.Add(new PathLinePrefab());
-            }
         }
 
         private void DrawPrefabMapping(SerializedProperty serializedProperty, int index)
@@ -46,17 +46,17 @@ namespace Game.Path.Editor
                 {
                     EditorGUILayout.PropertyField(type);
                     EditorGUILayout.PropertyField(prefab);
+                    EditorGUILayout.Space();
                 }
                 EditorGUILayout.EndVertical();
 
-                if (GUILayout.Button("Remove", GUILayout.Width(100f)))
+                if (GUILayout.Button("X", GUILayout.Width(20)))
                 {
                     RecordObject("Path Lines Mapping Change");
                     Target.PathLinePrefabs.RemoveAt(index);
                 }
             }
             EditorGUILayout.EndHorizontal();
-            EditorGUILayout.Space();
         }
     }
 }

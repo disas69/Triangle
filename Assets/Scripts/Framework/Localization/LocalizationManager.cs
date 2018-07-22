@@ -1,71 +1,72 @@
-﻿using UnityEngine;
+﻿using System;
+using System.Collections.Generic;
+using Framework.Extensions;
+using UnityEngine;
 
 namespace Framework.Localization
 {
     public class LocalizationManager : MonoBehaviour
     {
+        private static Dictionary<string, string> _languageDictionary;
         private static LocalizationStorage _localizationStorage;
-        private static SystemLanguage _currentLanguage;
         private static bool _isInitialized;
 
         [SerializeField] private LocalizationStorage _localizationStorageAsset;
         [SerializeField] private bool _useSystemLanguage;
-        [SerializeField] private SystemLanguage _startupLanguage;
+        [SerializeField] private SystemLanguage _language;
 
-        public static SystemLanguage CurrentLanguage
+        public static event Action LanguageChanged;
+
+        public static SystemLanguage CurrentLanguage { get; private set; }
+
+        public static void SetLanguage(SystemLanguage language)
         {
-            get { return _currentLanguage; }
+            if (language == CurrentLanguage)
+            {
+                return;
+            }
+
+            CurrentLanguage = language;
+            UpdateLanguageDictionary();
+            LanguageChanged.SafeInvoke();
         }
 
         public static string GetString(string key)
         {
-            if (_isInitialized)
+            string value;
+            if (_languageDictionary.TryGetValue(key, out value))
             {
-                var languageData = _localizationStorage.LanguagesData.Find(data => data.Language == _currentLanguage);
-                if (languageData != null)
-                {
-                    var keyIndex = _localizationStorage.Keys.FindIndex(k => k == key);
-                    if (keyIndex >= 0)
-                    {
-                        return languageData.Strings[keyIndex];
-                    }
-                }
+                return value;
             }
 
-            Debug.LogError(string.Format("Failed to find string by key \"{0}\" for language \"{1}\"", key, _currentLanguage));
-            return string.Empty;
+            Debug.LogError(string.Format("Failed to find string by key \"{0}\" for language \"{1}\"", key, CurrentLanguage));
+            return "?";
         }
 
         private void Awake()
         {
             if (_localizationStorageAsset != null)
             {
-                Initialize(_localizationStorageAsset);
+                Initialize(_localizationStorageAsset, _language, _useSystemLanguage);
+                UpdateLanguageDictionary();
             }
             else
             {
                 Debug.LogError("Failed to initialize LocalizationManager!");
-                return;
-            }
-
-            if (_useSystemLanguage)
-            {
-                _currentLanguage = GetSystemLanguage();
-            }
-            else
-            {
-                _currentLanguage = _startupLanguage;
             }
         }
 
-        private static void Initialize(LocalizationStorage dictionary)
+        private static void Initialize(LocalizationStorage localizationStorage, SystemLanguage language, bool useSystemLanguage)
         {
             if (_isInitialized)
             {
                 return;
             }
 
-            _localizationStorage = dictionary;
+            _languageDictionary = new Dictionary<string, string>();
+            _localizationStorage = localizationStorage;
+
+            CurrentLanguage = useSystemLanguage ? GetSystemLanguage() : language;
             _isInitialized = true;
         }
 
@@ -83,6 +84,27 @@ namespace Framework.Localization
             }
 
             return SystemLanguage.English;
+        }
+
+        private static void UpdateLanguageDictionary()
+        {
+            _languageDictionary.Clear();
+
+            var languageData = _localizationStorage.LanguagesData.Find(data => data.Language == CurrentLanguage);
+            if (languageData != null)
+            {
+                for (int i = 0; i < _localizationStorage.Keys.Count; i++)
+                {
+                    var key = _localizationStorage.Keys[i];
+                    var value = languageData.Strings[i];
+
+                    _languageDictionary.Add(key, value);
+                }
+            }
+            else
+            {
+                Debug.LogError(string.Format("Failed to find language data for language \"{0}\"", CurrentLanguage));
+            }
         }
     }
 }

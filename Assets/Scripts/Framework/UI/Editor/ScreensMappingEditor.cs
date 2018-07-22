@@ -15,8 +15,13 @@ namespace Framework.UI.Editor
             EditorGUILayout.BeginVertical(GUI.skin.box);
             {
                 EditorGUILayout.LabelField("Pages Mapping", HeaderStyle);
-                var screenSettings = serializedObject.FindProperty("ScreenSettings");
+                if (GUILayout.Button("Add page"))
+                {
+                    RecordObject("Screens Mapping Change");
+                    Target.ScreenSettings.Add(null);
+                }
 
+                var screenSettings = serializedObject.FindProperty("ScreenSettings");
                 var count = screenSettings.arraySize;
                 for (int i = 0; i < count; i++)
                 {
@@ -36,7 +41,7 @@ namespace Framework.UI.Editor
                         }
                         EditorGUILayout.EndVertical();
 
-                        if (GUILayout.Button("Remove", GUILayout.Width(100f)))
+                        if (GUILayout.Button("X", GUILayout.Width(20)))
                         {
                             RecordObject("Screens Mapping Change");
                             Target.ScreenSettings.RemoveAt(i);
@@ -48,18 +53,17 @@ namespace Framework.UI.Editor
             }
             EditorGUILayout.EndVertical();
 
-            if (GUILayout.Button("Add"))
+            EditorGUILayout.BeginVertical(GUI.skin.box);
             {
-                RecordObject("Screens Mapping Change");
-                Target.ScreenSettings.Add(null);
-            }
+                EditorGUILayout.LabelField("Popups Mapping", HeaderStyle);
+                if (GUILayout.Button("Add popup"))
+                {
+                    RecordObject("Screens Mapping Change");
+                    Target.PopupSettings.Add(null);
+                }
 
-            EditorGUILayout.LabelField("Popups Mapping", HeaderStyle);
-            var popupSettings = serializedObject.FindProperty("PopupSettings");
-
-            if (popupSettings.arraySize > 0)
-            {
-                EditorGUILayout.BeginVertical(GUI.skin.box);
+                var popupSettings = serializedObject.FindProperty("PopupSettings");
+                if (popupSettings.arraySize > 0)
                 {
                     var count = popupSettings.arraySize;
                     for (int i = 0; i < count; i++)
@@ -78,7 +82,7 @@ namespace Framework.UI.Editor
                             }
                             EditorGUILayout.EndVertical();
 
-                            if (GUILayout.Button("Remove", GUILayout.Width(100f)))
+                            if (GUILayout.Button("X", GUILayout.Width(20)))
                             {
                                 RecordObject("Screens Mapping Change");
                                 Target.PopupSettings.RemoveAt(i);
@@ -88,14 +92,8 @@ namespace Framework.UI.Editor
                         EditorGUILayout.Space();
                     }
                 }
-                EditorGUILayout.EndVertical();
             }
-
-            if (GUILayout.Button("Add"))
-            {
-                RecordObject("Screens Mapping Change");
-                Target.PopupSettings.Add(null);
-            }
+            EditorGUILayout.EndVertical();
         }
     }
 }

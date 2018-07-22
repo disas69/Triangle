@@ -1,21 +1,21 @@
 ﻿using System.IO;
 using System.Text;
+using Framework.Editor;
 using UnityEditor;
 using UnityEngine;
 
 namespace Framework.Localization.Editor
 {
     [CustomEditor(typeof(LocalizationStorage))]
-    public class LocalizationStorageEditor : UnityEditor.Editor
+    public class LocalizationStorageEditor : CustomEditorBase<LocalizationStorage>
     {
-        private LocalizationStorage _localizationStorage;
         private string[] _editorBars;
-        private GUIStyle _headerStyle;
+        private SearchBar _searchBar;
 
         private static int BarIndex
         {
             get { return EditorPrefs.GetInt("ls_bar_index", 0); }
-            set { EditorPrefs.SetInt("ls_bar_index", value);}
+            set { EditorPrefs.SetInt("ls_bar_index", value); }
         }
 
         private static int LangIndex
@@ -24,25 +24,21 @@ namespace Framework.Localization.Editor
             set { EditorPrefs.SetInt("ls_lang_index", value); }
         }
 
-        private void OnEnable()
+        protected override void OnEnable()
         {
-            _localizationStorage = (LocalizationStorage) target;
+            base.OnEnable();
             _editorBars = new[] {"Dictionary", "Languages"};
-            _headerStyle = new GUIStyle
-            {
-                normal = {textColor = Color.gray},
-                fontStyle = FontStyle.Bold,
-                alignment = TextAnchor.MiddleCenter
-            };
+            _searchBar = new SearchBar();
         }
 
-        public override void OnInspectorGUI()
+        protected override void DrawInspector()
         {
-            EditorGUILayout.LabelField("Localization Storage", _headerStyle);
+            base.DrawInspector();
+
+            EditorGUILayout.LabelField("Localization Storage", HeaderStyle);
             BarIndex = GUILayout.Toolbar(BarIndex, _editorBars);
             EditorGUILayout.Space();
 
-            EditorGUI.BeginChangeCheck();
             if (BarIndex == 0)
             {
                 DrawDictionaryEditor();
@@ -51,33 +47,39 @@ namespace Framework.Localization.Editor
             {
                 DrawLanguagesEditor();
             }
-
-            serializedObject.ApplyModifiedProperties();
-            serializedObject.Update();
-
-            if (EditorGUI.EndChangeCheck())
-            {
-                EditorUtility.SetDirty(_localizationStorage);
-            }
         }
 
         private void DrawLanguagesEditor()
         {
-            if (_localizationStorage.LanguagesData.Count > 0)
+            if (GUILayout.Button("Add language"))
+            {
+                RecordObject("Localization Storage Change");
+
+                var newIndex = Target.LanguagesData.Count;
+                Target.LanguagesData.Add(new LanguageData());
+                Target.LanguagesData[newIndex].Language = SystemLanguage.English;
+
+                for (int i = 0; i < Target.Keys.Count; i++)
+                {
+                    Target.LanguagesData[newIndex].Strings.Add("?");
+                }
+            }
+
+            if (Target.LanguagesData.Count > 0)
             {
                 EditorGUILayout.BeginVertical(GUI.skin.box);
                 {
-                    for (int i = 0; i < _localizationStorage.LanguagesData.Count; i++)
+                    for (int i = 0; i < Target.LanguagesData.Count; i++)
                     {
                         EditorGUILayout.BeginHorizontal(GUI.skin.box);
                         {
-                            var selectedLanguage = EditorGUILayout.EnumPopup(new GUIContent("Language " + (i + 1)), _localizationStorage.LanguagesData[i].Language);
-                            _localizationStorage.LanguagesData[i].Language = (SystemLanguage) selectedLanguage;
+                            var selectedLanguage = EditorGUILayout.EnumPopup(new GUIContent("Language " + (i + 1)), Target.LanguagesData[i].Language);
+                            Target.LanguagesData[i].Language = (SystemLanguage) selectedLanguage;
 
                             if (GUILayout.Button("Remove", GUILayout.Width(100f)))
                             {
-                                RecordObject();
-                                _localizationStorage.LanguagesData.RemoveAt(i);
+                                RecordObject("Localization Storage Change");
+                                Target.LanguagesData.RemoveAt(i);
                                 LangIndex = 0;
                             }
                         }
@@ -87,36 +89,22 @@ namespace Framework.Localization.Editor
                 }
                 EditorGUILayout.EndVertical();
             }
-
-            if (GUILayout.Button("Add"))
-            {
-                RecordObject();
-
-                var newIndex = _localizationStorage.LanguagesData.Count;
-                _localizationStorage.LanguagesData.Add(new LanguageData());
-                _localizationStorage.LanguagesData[newIndex].Language = SystemLanguage.English;
-
-                for (int i = 0; i < _localizationStorage.Keys.Count; i++)
-                {
-                    _localizationStorage.LanguagesData[newIndex].Strings.Add("?");
-                }
-            }
         }
 
         private void DrawDictionaryEditor()
         {
-            if (_localizationStorage.LanguagesData.Count == 0)
+            if (Target.LanguagesData.Count == 0)
             {
                 EditorGUILayout.BeginVertical(GUI.skin.box);
                 {
                     EditorGUILayout.LabelField("Add new Language using \"Languages\" tab.");
                 }
                 EditorGUILayout.EndVertical();
-                
+
                 return;
             }
 
-            if (LangIndex >= _localizationStorage.LanguagesData.Count)
+            if (LangIndex >= Target.LanguagesData.Count)
             {
                 LangIndex = 0;
             }
@@ -128,11 +116,11 @@ namespace Framework.Localization.Editor
                     LangIndex--;
                     if (LangIndex < 0)
                     {
-                        LangIndex = _localizationStorage.LanguagesData.Count - 1;
+                        LangIndex = Target.LanguagesData.Count - 1;
                     }
                 }
 
-                var label = string.Format("{0}. {1}", LangIndex + 1, _localizationStorage.LanguagesData[LangIndex].Language.ToString());
+                var label = string.Format("{0}. {1}", LangIndex + 1, Target.LanguagesData[LangIndex].Language.ToString());
                 var subHeaderStyle = new GUIStyle(GUI.skin.label)
                 {
                     normal = {textColor = Color.gray},
@@ -145,7 +133,7 @@ namespace Framework.Localization.Editor
                 if (GUILayout.Button("->", GUILayout.Width(100f)))
                 {
                     LangIndex++;
-                    if (LangIndex >= _localizationStorage.LanguagesData.Count)
+                    if (LangIndex >= Target.LanguagesData.Count)
                     {
                         LangIndex = 0;
                     }
@@ -156,17 +144,34 @@ namespace Framework.Localization.Editor
 
             EditorGUILayout.BeginVertical(GUI.skin.box);
             {
-                EditorGUILayout.BeginHorizontal();
+                EditorGUILayout.BeginVertical(GUI.skin.box);
                 {
-                    if (GUILayout.Button("Import CSV"))
+                    EditorGUILayout.BeginHorizontal();
                     {
-                        ImportCSV();
-                    }
+                        if (GUILayout.Button("Add key"))
+                        {
+                            RecordObject("Localization Storage Change");
 
-                    if (GUILayout.Button("Export CSV"))
-                    {
-                        ExportCSV();
+                            Target.Keys.Add("Key " + Target.Keys.Count);
+                            for (int i = 0; i < Target.LanguagesData.Count; i++)
+                            {
+                                Target.LanguagesData[i].Strings.Add("?");
+                            }
+                        }
+
+                        if (GUILayout.Button("Import CSV"))
+                        {
+                            ImportCSV();
+                        }
+
+                        if (GUILayout.Button("Export CSV"))
+                        {
+                            ExportCSV();
+                        }
                     }
+                    EditorGUILayout.EndHorizontal();
+
+                    _searchBar.Draw();
                 }
                 EditorGUILayout.EndVertical();
                 EditorGUILayout.Space();
@@ -178,40 +183,42 @@ namespace Framework.Localization.Editor
                 }
                 EditorGUILayout.EndVertical();
 
-                for (int i = 0; i < _localizationStorage.Keys.Count; i++)
+                int searchResultsCount = 0;
+                for (int i = 0; i < Target.Keys.Count; i++)
                 {
+                    if (!_searchBar.IsEmpty && !_searchBar.IsMatchingTheFilter(Target.Keys[i]) &&
+                        !_searchBar.IsMatchingTheFilter(Target.LanguagesData[LangIndex].Strings[i]))
+                    {
+                        continue;
+                    }
+
+                    searchResultsCount++;
                     EditorGUILayout.BeginHorizontal(GUI.skin.box);
                     {
-                        _localizationStorage.Keys[i] = EditorGUILayout.TextField(_localizationStorage.Keys[i], GUILayout.Width(100));
-                        _localizationStorage.LanguagesData[LangIndex].Strings[i] = EditorGUILayout.TextArea(_localizationStorage.LanguagesData[LangIndex].Strings[i]);
+                        Target.Keys[i] = EditorGUILayout.TextField(Target.Keys[i], GUILayout.Width(100));
+                        Target.LanguagesData[LangIndex].Strings[i] = EditorGUILayout.TextArea(Target.LanguagesData[LangIndex].Strings[i]);
 
                         if (GUILayout.Button("X", GUILayout.Width(20)))
                         {
-                            RecordObject();
+                            RecordObject("Localization Storage Change");
 
-                            _localizationStorage.Keys.RemoveAt(i);
-                            for (int k = 0; k < _localizationStorage.LanguagesData.Count; k++)
+                            Target.Keys.RemoveAt(i);
+                            for (int k = 0; k < Target.LanguagesData.Count; k++)
                             {
-                                _localizationStorage.LanguagesData[k].Strings.RemoveAt(i);
+                                Target.LanguagesData[k].Strings.RemoveAt(i);
                             }
                         }
                     }
                     EditorGUILayout.EndHorizontal();
                     EditorGUILayout.Space();
                 }
-            }
-            EditorGUILayout.EndVertical();
 
-            if (GUILayout.Button("Add"))
-            {
-                RecordObject();
-
-                _localizationStorage.Keys.Add("Key " + _localizationStorage.Keys.Count);
-                for (int i = 0; i < _localizationStorage.LanguagesData.Count; i++)
+                if (searchResultsCount == 0)
                 {
-                    _localizationStorage.LanguagesData[i].Strings.Add("?");
+                    EditorGUILayout.LabelField("No matches found...", LabelStyle);
                 }
             }
+            EditorGUILayout.EndVertical();
         }
 
         private void ImportCSV()
@@ -222,27 +229,41 @@ namespace Framework.Localization.Editor
                 var file = File.ReadAllText(path);
                 var lines = file.Split('\n');
 
+                int index = -1;
                 for (int j = 0; j < lines.Length; j++)
                 {
                     var line = lines[j];
                     var strings = line.Split(',');
 
-                    if (strings.Length > 1)
+                    if (strings.Length == 2)
                     {
                         var key = strings[0];
-                        var index = _localizationStorage.Keys.FindIndex(k => k == key);
+
+                        index = Target.Keys.FindIndex(k => k == key);
                         if (index >= 0)
                         {
-                            _localizationStorage.LanguagesData[LangIndex].Strings[index] = strings[1];
+                            Target.LanguagesData[LangIndex].Strings[index] = strings[1];
                         }
                         else
                         {
-                            _localizationStorage.Keys.Add(key);
-                            for (int i = 0; i < _localizationStorage.LanguagesData.Count; i++)
+                            Target.Keys.Add(key);
+                            for (int i = 0; i < Target.LanguagesData.Count; i++)
                             {
-                                _localizationStorage.LanguagesData[i].Strings.Add(i == LangIndex ? strings[1] : "?");
+                                Target.LanguagesData[i].Strings.Add(i == LangIndex ? strings[1] : "?");
                             }
                         }
+                    }
+                    else if (strings.Length == 1)
+                    {
+                        var value = strings[0];
+                        if (index >= 0)
+                        {
+                            Target.LanguagesData[LangIndex].Strings[index] += string.Format("\n{0}", value);
+                        }
+                    }
+                    else
+                    {
+                        Debug.LogWarningFormat("ImportCSV error: CSV file contains invalid line \"{0}\" that has been omitted during import", j);
                     }
                 }
             }
@@ -250,24 +271,31 @@ namespace Framework.Localization.Editor
 
         private void ExportCSV()
         {
-            var path = EditorUtility.SaveFilePanel("Export CSV", "", _localizationStorage.LanguagesData[LangIndex].Language.ToString(), "csv");
+            var path = EditorUtility.SaveFilePanel("Export CSV", "", Target.LanguagesData[LangIndex].Language.ToString(), "csv");
             if (!string.IsNullOrEmpty(path))
             {
+                int index = 0;
                 var stringBuilder = new StringBuilder();
-                for (int i = 0; i < _localizationStorage.Keys.Count; i++)
+                for (int i = 0; i < Target.Keys.Count; i++)
                 {
-                    var key = _localizationStorage.Keys[i];
-                    var value = _localizationStorage.LanguagesData[LangIndex].Strings[i];
-                    stringBuilder.AppendLine(string.Format("{0},{1}", key, value));
+                    var key = Target.Keys[i];
+                    var value = Target.LanguagesData[LangIndex].Strings[i];
+
+                    if (!string.IsNullOrEmpty(key) && !string.IsNullOrEmpty(value))
+                    {
+                        var strings = string.Format("{0},{1}", key, value);
+                        if (index != 0)
+                        {
+                            stringBuilder.AppendLine();
+                        }
+
+                        stringBuilder.Append(strings);
+                        index++;
+                    }
                 }
 
                 File.WriteAllText(path, stringBuilder.ToString());
             }
-        }
-
-        private void RecordObject(string changeDescription = "Localization Storage Change")
-        {
-            Undo.RecordObject(serializedObject.targetObject, changeDescription);
         }
     }
 }

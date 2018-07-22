@@ -25,8 +25,7 @@ namespace Game.Core.Structure
             get { return _bestScore.Value; }
         }
 
-        public GameSession(IntVariable currentScore, IntVariable bestScore, Event passed10LinesEvent = null,
-            Event bestScoreBeatenEvent = null)
+        public GameSession(IntVariable currentScore, IntVariable bestScore, Event passed10LinesEvent = null, Event bestScoreBeatenEvent = null)
         {
             _currentScore = currentScore;
             _bestScore = bestScore;
