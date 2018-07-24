@@ -76,7 +76,7 @@ namespace Framework.Localization.Editor
                             var selectedLanguage = EditorGUILayout.EnumPopup(new GUIContent("Language " + (i + 1)), Target.LanguagesData[i].Language);
                             Target.LanguagesData[i].Language = (SystemLanguage) selectedLanguage;
 
-                            if (GUILayout.Button("Remove", GUILayout.Width(100f)))
+                            if (GUILayout.Button("X", GUILayout.Width(20)))
                             {
                                 RecordObject("Localization Storage Change");
                                 Target.LanguagesData.RemoveAt(i);
@@ -111,7 +111,7 @@ namespace Framework.Localization.Editor
 
             EditorGUILayout.BeginHorizontal(GUI.skin.box);
             {
-                if (GUILayout.Button("<-", GUILayout.Width(100f)))
+                if (GUILayout.Button("<-", GUILayout.MaxWidth(100f)))
                 {
                     LangIndex--;
                     if (LangIndex < 0)
@@ -130,7 +130,7 @@ namespace Framework.Localization.Editor
 
                 EditorGUILayout.LabelField(label, subHeaderStyle);
 
-                if (GUILayout.Button("->", GUILayout.Width(100f)))
+                if (GUILayout.Button("->", GUILayout.MaxWidth(100f)))
                 {
                     LangIndex++;
                     if (LangIndex >= Target.LanguagesData.Count)
@@ -183,11 +183,15 @@ namespace Framework.Localization.Editor
                 }
                 EditorGUILayout.EndVertical();
 
+                var textAreaStyle = GUI.skin.box;
+                textAreaStyle.normal.textColor = Color.gray;
+                textAreaStyle.fontStyle = FontStyle.Normal;
+                textAreaStyle.alignment = TextAnchor.MiddleLeft;
+
                 int searchResultsCount = 0;
                 for (int i = 0; i < Target.Keys.Count; i++)
                 {
-                    if (!_searchBar.IsEmpty && !_searchBar.IsMatchingTheFilter(Target.Keys[i]) &&
-                        !_searchBar.IsMatchingTheFilter(Target.LanguagesData[LangIndex].Strings[i]))
+                    if (!_searchBar.IsEmpty && !_searchBar.IsMatchingTheFilter(Target.Keys[i]) && !_searchBar.IsMatchingTheFilter(Target.LanguagesData[LangIndex].Strings[i]))
                     {
                         continue;
                     }
@@ -196,7 +200,7 @@ namespace Framework.Localization.Editor
                     EditorGUILayout.BeginHorizontal(GUI.skin.box);
                     {
                         Target.Keys[i] = EditorGUILayout.TextField(Target.Keys[i], GUILayout.Width(100));
-                        Target.LanguagesData[LangIndex].Strings[i] = EditorGUILayout.TextArea(Target.LanguagesData[LangIndex].Strings[i]);
+                        Target.LanguagesData[LangIndex].Strings[i] = EditorGUILayout.TextArea(Target.LanguagesData[LangIndex].Strings[i], textAreaStyle, GUILayout.ExpandWidth(true));
 
                         if (GUILayout.Button("X", GUILayout.Width(20)))
                         {
