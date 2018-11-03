@@ -107,9 +107,9 @@ namespace Game.Path.Editor
                             rotationAngleValue -= 15f;
                         }
 
-                        EditorGUIUtility.editingTextField = false;
+                        GUI.enabled = false;
                         EditorGUILayout.PropertyField(rotationAngle, new GUIContent(string.Empty));
-                        EditorGUIUtility.editingTextField = true;
+                        GUI.enabled = true;
 
                         if (GUILayout.Button("+15"))
                         {

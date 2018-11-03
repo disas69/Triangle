@@ -1,44 +1,46 @@
 ﻿using Framework.Tools.Gameplay;
-using Framework.UI.Structure;
+using Framework.Tools.Singleton;
+using Framework.UI;
 using Framework.Utils;
-using Game.Audio.Structure;
+using Game.Audio;
 using Game.Core.Structure;
-using Game.Input.Structure;
+using Game.Input;
 using Game.Path;
 using Game.Triangle;
 using Game.UI.Screens.Play;
 using Game.UI.Screens.Replay;
 using Game.UI.Screens.Start;
 using UnityEngine;
-using Zenject;
 
 namespace Game.Core
 {
-    public class GameController : MonoBehaviour
+    public class GameController : MonoSingleton<GameController>
     {
         private GameSession _gameSession;
-        private GameSnapshot _gameSnapshot;
+        private SceneSnapshot _sceneSnapshot;
         private StateMachine<GameState> _gameStateMachine;
         private TriangleController _triangleController;
 
-        [Inject] private IInputProvider _inputProvider;
-        [Inject] private INavigationProvider _navigationProvider;
-        [Inject] private IAudioEffectsProvider _audioEffectsProvider;
-
+        [SerializeField] private InputProvider _inputProvider;
+        [SerializeField] private NavigationProvider _navigationProvider;
+        [SerializeField] private AudioEffectsProvider _audioEffectsProvider;
         [SerializeField] private TriangleController _trianglePrefab;
         [SerializeField] private PathController _pathController;
         [SerializeField] private Camera _camera;
         [SerializeField] private Transform _dynamicObjects;
-        [SerializeField] private GameVariables _gameVariables;
-        [SerializeField] private GameEvents _gameEvents;
+
+        public GameSession GameSession
+        {
+            get { return _gameSession; }
+        }
 
         private void Start()
         {
             UnityEngine.Input.multiTouchEnabled = false;
 
-            _gameSession = new GameSession(_gameVariables.CurrentScore, _gameVariables.BestScore, _gameEvents.Passed10LinesEvent, _gameEvents.BestScoreBeatenEvent);
-            _gameSnapshot = new GameSnapshot(_dynamicObjects);
-            _gameSnapshot.SaveState();
+            _gameSession = new GameSession();
+            _sceneSnapshot = new SceneSnapshot(_dynamicObjects);
+            _sceneSnapshot.Save();
 
             _gameStateMachine = CreateStateMachine();
             _inputProvider.PointerDown += OnPointerDown;
@@ -69,7 +71,7 @@ namespace Game.Core
             }
             else
             {
-                _gameSnapshot.RestoreState();
+                _sceneSnapshot.Restore();
                 _gameStateMachine.SetState(GameState.Idle);
             }
         }
@@ -135,7 +137,7 @@ namespace Game.Core
 
         private void OnDestroy()
         {
-            _gameSession.GameDataKeeper.Save();
+            _gameSession.GameData.Save();
             _inputProvider.PointerDown -= OnPointerDown;
 
             if (_triangleController != null)

@@ -20,18 +20,22 @@ namespace Framework.Audio.Editor
         {
             base.DrawInspector();
 
-            EditorGUILayout.LabelField("Audio Clips", HeaderStyle);
-            EditorGUILayout.BeginHorizontal(GUI.skin.box);
+            EditorGUILayout.BeginVertical(GUI.skin.box);
             {
-                _searchBar.Draw();
-
-                if (GUILayout.Button("Add clip"))
+                EditorGUILayout.LabelField("Audio Clips", HeaderStyle);
+                EditorGUILayout.BeginHorizontal(GUI.skin.box);
                 {
-                    RecordObject("Music Storage Change");
-                    Target.AudioClips.Add(new AudioClipConfig());
+                    _searchBar.Draw();
+
+                    if (GUILayout.Button("Add clip"))
+                    {
+                        RecordObject("Music Storage Change");
+                        Target.AudioClips.Add(new AudioClipConfig());
+                    }
                 }
+                EditorGUILayout.EndHorizontal();
             }
-            EditorGUILayout.EndHorizontal();
+            EditorGUILayout.EndVertical();
 
             var clipsList = serializedObject.FindProperty("AudioClips");
             var count = clipsList.arraySize;

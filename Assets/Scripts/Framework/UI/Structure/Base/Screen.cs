@@ -97,12 +97,17 @@ namespace Framework.UI.Structure.Base
 
             if (_outTransition)
             {
-                _transitionCoroutine = StartCoroutine(OutTransition(() => { gameObject.SetActive(false); }));
+                _transitionCoroutine = StartCoroutine(OutTransition(Deactivate));
             }
             else
             {
-                gameObject.SetActive(false);
+                Deactivate();
             }
+        }
+
+        protected virtual void Deactivate()
+        {
+            gameObject.SetActive(false);
         }
 
         public virtual void OnDestroy()

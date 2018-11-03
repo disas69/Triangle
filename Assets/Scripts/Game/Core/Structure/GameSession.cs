@@ -1,46 +1,47 @@
-﻿using Framework.Events;
-using Framework.Variables;
+﻿using Framework.Signals;
 using Game.Core.Data;
 
 namespace Game.Core.Structure
 {
     public class GameSession
     {
-        private readonly IntVariable _currentScore;
-        private readonly IntVariable _bestScore;
-        private readonly Event _passed10LinesEvent;
-        private readonly Event _bestScoreBeatenEvent;
+        private int _currentScore;
+        private int _bestScore;
 
         public bool ReadyToPlay { get; private set; }
         public bool IsPlaying { get; private set; }
-        public GameDataKeeper GameDataKeeper { get; private set; }
+        public GameDataKeeper GameData { get; private set; }
 
         public int CurrentScore
         {
-            get { return _currentScore.Value; }
+            get { return _currentScore; }
+            private set
+            {
+                _currentScore = value;
+                SignalsManager.Broadcast("CurrentScoreChanged", _currentScore);
+            }
         }
 
         public int BestScore
         {
-            get { return _bestScore.Value; }
+            get { return _bestScore; }
+            private set
+            {
+                _bestScore = value;
+                SignalsManager.Broadcast("BestScoreChanged", _bestScore);
+            }
         }
 
-        public GameSession(IntVariable currentScore, IntVariable bestScore, Event passed10LinesEvent = null, Event bestScoreBeatenEvent = null)
+        public GameSession()
         {
-            _currentScore = currentScore;
-            _bestScore = bestScore;
-
-            _passed10LinesEvent = passed10LinesEvent;
-            _bestScoreBeatenEvent = bestScoreBeatenEvent;
-
-            GameDataKeeper = new GameDataKeeper();
-            GameDataKeeper.Load();
+            GameData = new GameDataKeeper();
+            GameData.Load();
         }
 
         public void Idle()
         {
-            _currentScore.Value = 0;
-            _bestScore.Value = GameDataKeeper.Data.BestScore;
+            CurrentScore = 0;
+            BestScore = GameData.Data.BestScore;
 
             ReadyToPlay = true;
             IsPlaying = false;
@@ -57,28 +58,29 @@ namespace Game.Core.Structure
             ReadyToPlay = false;
             IsPlaying = false;
 
-            if (_currentScore.Value > _bestScore.Value)
+            if (CurrentScore > BestScore)
             {
-                _bestScore.Value = _currentScore.Value;
-                GameDataKeeper.Data.BestScore = _bestScore.Value;
-                GameDataKeeper.Save();
+                BestScore = CurrentScore;
+                GameData.Data.BestScore = BestScore;
+                GameData.Save();
             }
         }
 
         public void IncreaseScore()
         {
-            ++_currentScore.Value;
+            ++CurrentScore;
 
-            if (_currentScore.Value % 10 == 0 && _passed10LinesEvent != null)
+            //Use variable from configuration here
+            if (CurrentScore % 10 == 0)
             {
-                _passed10LinesEvent.Fire();
+                SignalsManager.Broadcast("PassedLineSection");
             }
 
-            if (_bestScore.Value > 0)
+            if (BestScore > 0)
             {
-                if (_currentScore.Value > _bestScore.Value && _bestScoreBeatenEvent != null)
+                if (CurrentScore > BestScore)
                 {
-                    _bestScoreBeatenEvent.Fire();
+                    SignalsManager.Broadcast("BestScoreBeaten");
                 }
             }
         }

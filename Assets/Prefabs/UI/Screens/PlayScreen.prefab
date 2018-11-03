@@ -21,7 +21,7 @@ GameObject:
   - component: {fileID: 224572939462002932}
   - component: {fileID: 114364371192855648}
   - component: {fileID: 225649955695020908}
-  - component: {fileID: 114412853283385564}
+  - component: {fileID: 114931792026918138}
   m_Layer: 5
   m_Name: PlayScreen
   m_TagString: Untagged
@@ -64,34 +64,6 @@ MonoBehaviour:
   _transitionSpeed: 0.5
   _model: {fileID: 11400000, guid: 29db84dbf16b5ee4b81fa00a92ef5820, type: 2}
   _currentScoreText: {fileID: 114812244515810430}
---- !u!114 &114412853283385564
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1856103978311006}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9441ad4189b44418a13e2dce16538270, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Event: {fileID: 11400000, guid: 10500a65d3a25f94fa155d3278963cb8, type: 2}
-  Response:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 114364371192855648}
-        m_MethodName: ShowNewBestScoreNotification
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-    m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine.CoreModule, Version=0.0.0.0,
-      Culture=neutral, PublicKeyToken=null
 --- !u!114 &114812244515810430
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -125,6 +97,35 @@ MonoBehaviour:
     m_VerticalOverflow: 0
     m_LineSpacing: 1
   m_Text: 0
+--- !u!114 &114931792026918138
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1856103978311006}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3923b3083efc45a40ae5759a8ddba6db, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Signal:
+    Name: BestScoreBeaten
+  Action:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 114364371192855648}
+        m_MethodName: ShowNewBestScoreNotification
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine.CoreModule, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
 --- !u!114 &114997167634341366
 MonoBehaviour:
   m_ObjectHideFlags: 1

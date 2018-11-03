@@ -1,4 +1,5 @@
 ﻿using Framework.Localization;
+using Framework.Signals;
 using Framework.UI.Notifications;
 using Framework.UI.Notifications.Model;
 using Framework.UI.Structure.Base.View;
@@ -19,16 +20,16 @@ namespace Game.UI.Screens.Play
             base.OnEnter();
 
             _bestScoreShown = false;
-            UpdateScoreValue(Model.CurrentScore.Value);
-            Model.CurrentScore.ValueChanged += UpdateScoreValue;
+
+            UpdateScoreValue(0);
+            SignalsManager.Register("CurrentScoreChanged", UpdateScoreValue);
             NotificationManager.Show(new TextNotification(LocalizationManager.GetString("FollowTheLine")), 2.5f);
         }
 
         public override void OnExit()
         {
             base.OnExit();
-
-            Model.CurrentScore.ValueChanged -= UpdateScoreValue;
+            SignalsManager.Unregister("CurrentScoreChanged", UpdateScoreValue);
             NotificationManager.HideAll();
         }
 

@@ -1,7 +1,5 @@
-﻿using Framework.Variables;
-using Game.Core.Structure;
+﻿using Game.Core.Structure;
 using NUnit.Framework;
-using UnityEngine;
 
 namespace Editor.Tests
 {
@@ -16,9 +14,7 @@ namespace Editor.Tests
         {
             GameDataEditor.ClearData();
 
-            var currentScore = ScriptableObject.CreateInstance<IntVariable>();
-            var bestScore = ScriptableObject.CreateInstance<IntVariable>();
-            var gameSession = new GameSession(currentScore, bestScore);
+            var gameSession = new GameSession();
             gameSession.Idle();
 
             for (int i = 0; i < CurrentScoreIncreaseIterations; i++)
@@ -37,9 +33,7 @@ namespace Editor.Tests
         {
             GameDataEditor.ClearData();
 
-            var currentScore = ScriptableObject.CreateInstance<IntVariable>();
-            var bestScore = ScriptableObject.CreateInstance<IntVariable>();
-            var gameSession = new GameSession(currentScore, bestScore);
+            var gameSession = new GameSession();
             gameSession.Idle();
 
             for (int i = 0; i < BestScoreIncreaseIterations; i++)
@@ -59,9 +53,7 @@ namespace Editor.Tests
         {
             GameDataEditor.ClearData();
 
-            var currentScore = ScriptableObject.CreateInstance<IntVariable>();
-            var bestScore = ScriptableObject.CreateInstance<IntVariable>();
-            var gameSession = new GameSession(currentScore, bestScore);
+            var gameSession = new GameSession();
             gameSession.Idle();
 
             for (int i = 0; i < BestScoreIncreaseIterationsForSaveLoadTest; i++)
@@ -75,9 +67,7 @@ namespace Editor.Tests
         [Test]
         public void _4_Best_Score_Load()
         {
-            var currentScore = ScriptableObject.CreateInstance<IntVariable>();
-            var bestScore = ScriptableObject.CreateInstance<IntVariable>();
-            var gameSession = new GameSession(currentScore, bestScore);
+            var gameSession = new GameSession();
             gameSession.Idle();
 
             Assert.AreEqual(gameSession.BestScore, BestScoreIncreaseIterationsForSaveLoadTest,
@@ -91,9 +81,7 @@ namespace Editor.Tests
         {
             GameDataEditor.ClearData();
 
-            var currentScore = ScriptableObject.CreateInstance<IntVariable>();
-            var bestScore = ScriptableObject.CreateInstance<IntVariable>();
-            var gameSession = new GameSession(currentScore, bestScore);
+            var gameSession = new GameSession();
             gameSession.Idle();
 
             Assert.AreEqual(gameSession.ReadyToPlay, true);
@@ -107,9 +95,7 @@ namespace Editor.Tests
         {
             GameDataEditor.ClearData();
 
-            var currentScore = ScriptableObject.CreateInstance<IntVariable>();
-            var bestScore = ScriptableObject.CreateInstance<IntVariable>();
-            var gameSession = new GameSession(currentScore, bestScore);
+            var gameSession = new GameSession();
             gameSession.Play();
 
             Assert.AreEqual(gameSession.ReadyToPlay, false);
@@ -123,9 +109,7 @@ namespace Editor.Tests
         {
             GameDataEditor.ClearData();
 
-            var currentScore = ScriptableObject.CreateInstance<IntVariable>();
-            var bestScore = ScriptableObject.CreateInstance<IntVariable>();
-            var gameSession = new GameSession(currentScore, bestScore);
+            var gameSession = new GameSession();
             gameSession.Stop();
 
             Assert.AreEqual(gameSession.ReadyToPlay, false);

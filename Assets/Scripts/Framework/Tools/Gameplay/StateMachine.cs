@@ -12,8 +12,7 @@ namespace Framework.Tools.Gameplay
         {
             if (!typeof(T).IsEnum)
             {
-                throw new Exception(string.Format("{0} is not a enum type. Can't create a state machine",
-                    typeof(T).Name));
+                throw new Exception(string.Format("{0} is not a enum type. Can't create a state machine", typeof(T).Name));
             }
 
             _transitions = new Dictionary<T, Dictionary<T, Action>>();

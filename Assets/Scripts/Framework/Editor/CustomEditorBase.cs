@@ -5,9 +5,9 @@ namespace Framework.Editor
 {
     public class CustomEditorBase<T> : UnityEditor.Editor where T : Object
     {
-        public T Target { get; private set; }
-        public GUIStyle HeaderStyle { get; private set; }
-        public GUIStyle LabelStyle { get; private set; }
+        protected T Target { get; private set; }
+        protected GUIStyle HeaderStyle { get; private set; }
+        protected GUIStyle LabelStyle { get; private set; }
 
         protected virtual void OnEnable()
         {
@@ -45,7 +45,7 @@ namespace Framework.Editor
         {
         }
 
-        protected void RecordObject(string changeDescription = "CustomEditor change")
+        protected void RecordObject(string changeDescription = "Custom editor change")
         {
             Undo.RecordObject(serializedObject.targetObject, changeDescription);
         }

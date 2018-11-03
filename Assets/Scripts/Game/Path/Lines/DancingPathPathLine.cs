@@ -49,15 +49,13 @@ namespace Game.Path.Lines
             var waiter = new WaitForSeconds(Random.Range(Settings.MinScaledTime, Settings.MaxScaledTime));
             yield return waiter;
 
-            var scaleMultiplier = Random.Range(Settings.MinScaleMultiplier,
-                Settings.MaxScaleMultiplier);
+            var scaleMultiplier = Random.Range(Settings.MinScaleMultiplier, Settings.MaxScaleMultiplier);
             _initialScale = transform.localScale;
 
             while (true)
             {
                 var localScale = transform.localScale;
-                transform.localScale = new Vector3(localScale.x * scaleMultiplier, localScale.y * scaleMultiplier,
-                    localScale.z);
+                transform.localScale = new Vector3(localScale.x * scaleMultiplier, localScale.y * scaleMultiplier, localScale.z);
                 yield return waiter;
 
                 transform.localScale = _initialScale.Value;

@@ -8,7 +8,7 @@ namespace Framework.Audio.Configuration
     public class AudioStorage : ScriptableObject
     {
         private Dictionary<string, AudioClip> _audioDictionary;
-        private bool _isInitialized;
+        [NonSerialized] private bool _isInitialized;
 
         public List<AudioClipConfig> AudioClips = new List<AudioClipConfig>();
 

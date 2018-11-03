@@ -1,4 +1,5 @@
 ﻿using Framework.UI.Structure.Base.View;
+using Game.Core;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -13,8 +14,8 @@ namespace Game.UI.Screens.Replay
         {
             base.OnEnter();
 
-            _currentScoreText.text = Model.CurrentScore.Value.ToString();
-            _bestScoreText.text = Model.BestScore.Value.ToString();
+            _currentScoreText.text = GameController.Instance.GameSession.CurrentScore.ToString();
+            _bestScoreText.text = GameController.Instance.GameSession.BestScore.ToString();
         }
     }
 }
