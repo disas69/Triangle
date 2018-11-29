@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.44657755, g: 0.4964127, b: 0.57481825, a: 1}
+  m_IndirectSpecularColor: {r: 0.44657642, g: 0.49641156, b: 0.5748181, a: 1}
 --- !u!157 &3
 LightmapSettings:
   m_ObjectHideFlags: 0
@@ -3855,7 +3855,7 @@ GameObject:
   - component: {fileID: 1403343962}
   - component: {fileID: 1403343964}
   m_Layer: 0
-  m_Name: Game
+  m_Name: GameController
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3910,7 +3910,7 @@ MonoBehaviour:
   _localizationStorageAsset: {fileID: 11400000, guid: c80147bcae82f834180a36df9a80d947,
     type: 2}
   _useSystemLanguage: 1
-  _language: 10
+  _language: 0
 --- !u!1 &1447568868
 GameObject:
   m_ObjectHideFlags: 0
