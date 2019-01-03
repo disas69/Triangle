@@ -5,4 +5,4 @@ The main goal is to pass as many lines as you can.
 
 Since this is a casual game, control should be easy and clear, therefore it uses only one finger. Player must hold the finger anywhere on the screen and move it in the desired direction. The triangle rotates automatically to the next line when it's close enough, so player has to care only about the moving direction and speed.
 
-Gameplay video: https://drive.google.com/open?id=17i6tL8yp3S4RdmxdpMRfH2SmE51SDFym
+[Gameplay video](https://drive.google.com/open?id=17i6tL8yp3S4RdmxdpMRfH2SmE51SDFym)
