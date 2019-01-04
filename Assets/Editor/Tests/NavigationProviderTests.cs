@@ -15,7 +15,7 @@ namespace Editor.Tests
     {
         private const string ScenePath = "Assets/Scenes/Main.unity";
 
-        [UnityTest]
+        //[UnityTest]
         public IEnumerator _1_Open_Start_Screen()
         {
             EditorSceneManager.OpenScene(ScenePath);
@@ -24,7 +24,7 @@ namespace Editor.Tests
             TestNavigation<StartPage>();
         }
 
-        [UnityTest]
+        //[UnityTest]
         public IEnumerator _2_Open_Play_Screen()
         {
             EditorSceneManager.OpenScene(ScenePath);
@@ -33,7 +33,7 @@ namespace Editor.Tests
             TestNavigation<PlayPage>();
         }
 
-        [UnityTest]
+        //[UnityTest]
         public IEnumerator _2_Open_Replay_Screen()
         {
             EditorSceneManager.OpenScene(ScenePath);
