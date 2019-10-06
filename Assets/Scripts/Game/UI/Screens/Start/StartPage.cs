@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using Framework.Extensions;
 using Framework.UI.Structure.Base.View;
 using UnityEngine;
@@ -12,7 +13,7 @@ namespace Game.UI.Screens.Start
         [SerializeField] private float _overlayTransitionSpeed;
         [SerializeField] private CanvasGroup _overlay;
 
-        protected override IEnumerator InTransition()
+        protected override IEnumerator InTransition(Action callback)
         {
             _overlayTransitionCoroutine = StartCoroutine(ShowOverlay());
             yield return _overlayTransitionCoroutine;

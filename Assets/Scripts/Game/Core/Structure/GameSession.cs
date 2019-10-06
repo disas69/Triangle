@@ -10,7 +10,7 @@ namespace Game.Core.Structure
 
         public bool ReadyToPlay { get; private set; }
         public bool IsPlaying { get; private set; }
-        public GameDataKeeper GameData { get; private set; }
+        public GameDataKeeper GameData { get; }
 
         public int CurrentScore
         {

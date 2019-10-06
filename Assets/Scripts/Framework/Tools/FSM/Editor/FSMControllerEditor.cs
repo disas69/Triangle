@@ -1,5 +1,6 @@
 ﻿using System.Text;
 using Framework.Editor;
+using Framework.Editor.GUIUtilities;
 using UnityEditor;
 using UnityEngine;
 
@@ -12,38 +13,49 @@ namespace Framework.Tools.FSM.Editor
         {
             base.DrawInspector();
 
-            EditorGUILayout.BeginVertical(GUI.skin.box);
+            var states = serializedObject.FindProperty("_states");
+
+            EditorGUILayout.BeginVertical();
             {
                 EditorGUILayout.LabelField("Finite State Machine Controller", HeaderStyle);
                 EditorGUILayout.BeginVertical(GUI.skin.box);
                 {
                     EditorGUILayout.LabelField("States", HeaderStyle);
-                    var states = serializedObject.FindProperty("_states");
                     var count = states.arraySize;
-                    for (int i = 0; i < count; i++)
+                    for (var i = 0; i < count; i++)
                     {
+                        var element = states.GetArrayElementAtIndex(i);
+
                         EditorGUILayout.BeginHorizontal(GUI.skin.box);
                         {
-                            var element = states.GetArrayElementAtIndex(i);
                             var elementName = element.objectReferenceValue != null
                                 ? element.objectReferenceValue.name
                                 : "None";
 
-                            if (i == 0)
+                            EditorGUILayout.PropertyField(element, new GUIContent(string.Format("{0}. {1}", i + 1, elementName)));
+                            if (element.objectReferenceValue != null)
                             {
-                                elementName += " (Initial state)";
+                                element.isExpanded = GUILayout.Toggle(element.isExpanded, "Edit", new GUIStyle(GUI.skin.button), GUILayout.Width(50f));
                             }
 
-                            EditorGUILayout.PropertyField(element,
-                                new GUIContent(string.Format("{0}. {1}", i + 1, elementName)));
-                            if (GUILayout.Button("Remove", GUILayout.Width(100f)))
+                            if (GUILayout.Button("Remove", GUILayout.Width(60f)))
                             {
                                 RecordObject("FSMController Change");
-                                Target.States.RemoveAt(i);
+                                states.GetArrayElementAtIndex(i).objectReferenceValue = null;
+                                states.DeleteArrayElementAtIndex(i);
+                                break;
                             }
                         }
                         EditorGUILayout.EndHorizontal();
-                        EditorGUILayout.Space();
+
+                        if (element.objectReferenceValue != null && element.isExpanded)
+                        {
+                            var editor = CreateEditor(element.objectReferenceValue);
+                            using (new GUIIndent())
+                            {
+                                editor.OnInspectorGUI();
+                            }
+                        }
                     }
                 }
                 EditorGUILayout.EndVertical();
@@ -52,13 +64,12 @@ namespace Framework.Tools.FSM.Editor
 
             if (EditorApplication.isPlaying)
             {
-                EditorGUILayout.Space();
                 EditorGUILayout.BeginVertical(GUI.skin.box);
                 {
                     EditorGUILayout.LabelField("Debug info", HeaderStyle);
 
-                    var info = "Null";
                     var stringBuilder = new StringBuilder();
+                    var info = "Null";
 
                     var currentState = Target.CurrentState;
                     if (currentState != null)
@@ -66,6 +77,7 @@ namespace Framework.Tools.FSM.Editor
                         stringBuilder.AppendLine(string.Format("Current state: {0}", currentState.Name));
                         stringBuilder.AppendLine();
                         stringBuilder.AppendLine("Action:");
+
                         if (currentState.Action != null)
                         {
                             stringBuilder.AppendLine(string.Format("{0}", currentState.Action.GetType().Name));
@@ -73,7 +85,8 @@ namespace Framework.Tools.FSM.Editor
 
                         stringBuilder.AppendLine();
                         stringBuilder.AppendLine("Transitions:");
-                        for (int i = 0; i < currentState.Transitions.Count; i++)
+
+                        for (var i = 0; i < currentState.Transitions.Count; i++)
                         {
                             var transition = currentState.Transitions[i];
                             stringBuilder.AppendLine(string.Format("{0}. Transition: {1} -> {2}", i + 1,
@@ -84,7 +97,11 @@ namespace Framework.Tools.FSM.Editor
                         info = stringBuilder.ToString();
                     }
 
-                    EditorGUILayout.TextArea(info);
+                    using (new GUIEnabled(false))
+                    {
+                        EditorGUILayout.TextArea(info);
+                        Repaint();
+                    }
                 }
                 EditorGUILayout.EndVertical();
             }
@@ -93,7 +110,8 @@ namespace Framework.Tools.FSM.Editor
                 if (GUILayout.Button("Add"))
                 {
                     RecordObject("FSMController Change");
-                    Target.States.Add(null);
+                    states.arraySize++;
+                    states.GetArrayElementAtIndex(states.arraySize - 1).objectReferenceValue = null;
                 }
             }
         }

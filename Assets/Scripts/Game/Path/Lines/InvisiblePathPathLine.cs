@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using DG.Tweening;
 using Framework.Extensions;
 using Game.Path.Lines.Base;
 using Game.Path.Lines.Configuration;
@@ -21,7 +22,6 @@ namespace Game.Path.Lines
         {
             base.OnEnable();
 
-            MeshRenderer.enabled = true;
             _particleEffect.SetActive(true);
             _effectCoroutine = StartCoroutine(PlayEffect());
         }
@@ -38,24 +38,37 @@ namespace Game.Path.Lines
             StopEffect();
         }
 
+        protected override void OnLineTriggered()
+        {
+            //Do nothing
+        }
+
+        public override void SetProgress(Vector3 position)
+        {
+            //Do nothing
+        }
+
         private void StopEffect()
         {
             this.SafeStopCoroutine(_effectCoroutine);
-            MeshRenderer.enabled = true;
             _particleEffect.SetActive(false);
+            MeshRenderer.material.DOPause();
         }
 
         private IEnumerator PlayEffect()
         {
-            var waiter = new WaitForSeconds(Random.Range(Settings.MinInvisibleTime, Settings.MaxInvisibleTime));
+            var time = Random.Range(Settings.MinInvisibleTime, Settings.MaxInvisibleTime);
+            var waiter = new WaitForSeconds(time);
             yield return waiter;
+
+            var color = MeshRenderer.sharedMaterial.color;
 
             while (true)
             {
-                MeshRenderer.enabled = false;
+                MeshRenderer.material.DOColor(color.WithAlpha(0), time);
                 yield return waiter;
 
-                MeshRenderer.enabled = true;
+                MeshRenderer.material.DOColor(color.WithAlpha(1), time);
                 yield return waiter;
             }
         }

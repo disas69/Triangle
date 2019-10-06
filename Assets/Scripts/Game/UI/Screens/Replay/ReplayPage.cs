@@ -14,8 +14,8 @@ namespace Game.UI.Screens.Replay
         {
             base.OnEnter();
 
-            _currentScoreText.text = GameController.Instance.GameSession.CurrentScore.ToString();
-            _bestScoreText.text = GameController.Instance.GameSession.BestScore.ToString();
+            _currentScoreText.text = GameController.Instance.Session.CurrentScore.ToString();
+            _bestScoreText.text = GameController.Instance.Session.BestScore.ToString();
         }
     }
 }

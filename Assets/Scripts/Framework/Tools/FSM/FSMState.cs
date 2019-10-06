@@ -34,32 +34,46 @@ namespace Framework.Tools.FSM
         {
             _controller = controller;
 
-            if(_action != null) _action.Initialize(controller);
-            for (int i = 0; i < _transitions.Count; i++)
+            if (_action != null)
             {
-                _transitions[i].Condition.Initialize(controller);
+                _action.Initialize(controller);
+            }
+
+            for (var i = 0; i < _transitions.Count; i++)
+            {
+                _transitions[i].Condition.Initialize(_action, controller);
             }
         }
 
         public void Enter()
         {
-            if (_action != null) _action.OnEnter();
+            if (_action != null)
+            {
+                _action.OnEnter();
+            }
         }
 
         public void Update()
         {
-            if (_action != null) _action.OnUpdate();
+            if (_action != null)
+            {
+                _action.OnUpdate();
+            }
+
             CheckTransitions();
         }
 
         public void Exit()
         {
-            if (_action != null) _action.OnExit();
+            if (_action != null)
+            {
+                _action.OnExit();
+            }
         }
 
         private void CheckTransitions()
         {
-            for (int i = 0; i < _transitions.Count; i++)
+            for (var i = 0; i < _transitions.Count; i++)
             {
                 var conditionSucceeded = _transitions[i].Condition.Check();
                 if (conditionSucceeded)

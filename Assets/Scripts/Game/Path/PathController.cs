@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Assets.Scripts.Game;
 using Framework.Tools.Gameplay;
 using Game.Path.Configuration;
 using Game.Path.Lines.Base;
@@ -173,6 +174,73 @@ namespace Game.Path
             }
 
             _activeLines.Clear();
+        }
+
+        public Line GetLineInPosition(Vector3 position)
+        {
+            Line closestLine = null;
+            var distance = float.MaxValue;
+
+            for (int i = 0; i < _activeLines.Count; i++)
+            {
+                var line = _activeLines[i];
+                var lineDistance = MathUtils.GetDistanceToSegment(new Vector2(position.x, position.z),
+                    new Vector2(line.StartPointPosition.x, line.StartPointPosition.z),
+                    new Vector2(line.EndPointPosition.x, line.EndPointPosition.z));
+
+                if (lineDistance >= 0 && lineDistance < distance)
+                {
+                    distance = lineDistance;
+                    closestLine = line;
+                }
+
+                /*
+                var x1 = line.StartPointPosition.x;
+                var x2 = line.EndPointPosition.x;
+
+                if (x1 > x2)
+                {
+                    var temp = x1;
+                    x1 = x2;
+                    x2 = temp;
+                }
+
+                var z1 = line.StartPointPosition.z;
+                var z2 = line.EndPointPosition.z;
+
+                if (z1 > z2)
+                {
+                    var temp = z1;
+                    z1 = z2;
+                    z2 = temp;
+                }
+
+                if (position.x >= x1 && position.x <= x2 || position.z >= z1 && position.z <= z2)
+                {
+                    return line;
+                }
+
+                
+                //Debug.DrawLine(position, line.StartPointPosition);
+                var startPointDistance = Vector3.Distance(position, line.StartPointPosition);
+
+                if (startPointDistance < distance)
+                {
+                    distance = startPointDistance;
+                    closestLine = line;
+                }
+
+                //Debug.DrawLine(position, line.EndPointPosition);
+                var endPointDistance = Vector3.Distance(position, line.EndPointPosition);
+                if (endPointDistance < distance)
+                {
+                    distance = endPointDistance;
+                    closestLine = line;
+                }
+                */
+            }
+
+            return closestLine;
         }
     }
 }

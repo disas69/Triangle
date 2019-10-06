@@ -1,13 +1,15 @@
 ﻿using System;
 using Framework.Extensions;
-using UnityEngine;
+using Framework.Tools.Singleton;
 using UnityEngine.EventSystems;
 
 namespace Framework.Input
 {
-    public class InputEventProvider : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerDownHandler,
+    public class InputEventProvider : MonoSingleton<InputEventProvider>, IPointerEnterHandler, IPointerExitHandler, IPointerDownHandler,
         IPointerUpHandler, IBeginDragHandler, IDragHandler, IEndDragHandler, IPointerClickHandler
     {
+        private int _pointersCount;
+
         public event Action<PointerEventData> PointerClick;
         public event Action<PointerEventData> PointerEnter;
         public event Action<PointerEventData> PointerExit;
@@ -16,6 +18,8 @@ namespace Framework.Input
         public event Action<PointerEventData> BeginDrag;
         public event Action<PointerEventData> Drag;
         public event Action<PointerEventData> EndDrag;
+
+        public int PointersCount => _pointersCount;
 
         public virtual void OnPointerEnter(PointerEventData eventData)
         {
@@ -29,11 +33,13 @@ namespace Framework.Input
 
         public virtual void OnPointerDown(PointerEventData eventData)
         {
+            _pointersCount++;
             PointerDown.SafeInvoke(eventData);
         }
 
         public virtual void OnPointerUp(PointerEventData eventData)
         {
+            _pointersCount--;
             PointerUp.SafeInvoke(eventData);
         }
 

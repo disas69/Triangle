@@ -9,7 +9,7 @@ namespace Framework.UI.Notifications.View
     {
         public abstract void Initialize(INotification model, float showTime);
         public abstract void Show();
-        public abstract void Hide();
+        public abstract void Hide(bool immediately);
     }
 
     [RequireComponent(typeof(CanvasGroup))]
@@ -49,9 +49,9 @@ namespace Framework.UI.Notifications.View
             }
         }
 
-        public override void Hide()
+        public override void Hide(bool immediately)
         {
-            if (OutTransitionEnabled)
+            if (!immediately && OutTransitionEnabled)
             {
                 StartTransition(OutTransition());
             }
@@ -72,7 +72,7 @@ namespace Framework.UI.Notifications.View
             if (_elapsedTime >= ShowTime)
             {
                 _isActive = false;
-                Hide();
+                Hide(false);
             }
         }
 

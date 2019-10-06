@@ -44,7 +44,7 @@ namespace Editor.Tests
 
         private static void TestNavigation<T>() where T : Screen
         {
-            var navigationProvider = Object.FindObjectOfType<NavigationProvider>();
+            var navigationProvider = Object.FindObjectOfType<NavigationManager>();
             if (navigationProvider != null)
             {
                 navigationProvider.OpenScreen<T>();

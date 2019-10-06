@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using DG.Tweening;
 using Framework.Extensions;
 using Game.Path.Lines.Base;
 using Game.Path.Lines.Configuration;
@@ -19,6 +20,7 @@ namespace Game.Path.Lines
         protected override void OnEnable()
         {
             base.OnEnable();
+            _initialScale = null;
             _effectCoroutine = StartCoroutine(PlayEffect());
         }
 
@@ -38,6 +40,8 @@ namespace Game.Path.Lines
         {
             this.SafeStopCoroutine(_effectCoroutine);
 
+            transform.DOPause();
+
             if (_initialScale.HasValue)
             {
                 transform.localScale = _initialScale.Value;
@@ -46,7 +50,8 @@ namespace Game.Path.Lines
 
         private IEnumerator PlayEffect()
         {
-            var waiter = new WaitForSeconds(Random.Range(Settings.MinScaledTime, Settings.MaxScaledTime));
+            var time = Random.Range(Settings.MinScaledTime, Settings.MaxScaledTime);
+            var waiter = new WaitForSeconds(time);
             yield return waiter;
 
             var scaleMultiplier = Random.Range(Settings.MinScaleMultiplier, Settings.MaxScaleMultiplier);
@@ -55,10 +60,11 @@ namespace Game.Path.Lines
             while (true)
             {
                 var localScale = transform.localScale;
-                transform.localScale = new Vector3(localScale.x * scaleMultiplier, localScale.y * scaleMultiplier, localScale.z);
+                var scale = new Vector3(localScale.x * scaleMultiplier, localScale.y * scaleMultiplier, localScale.z);
+                transform.DOScale(scale, time);
                 yield return waiter;
 
-                transform.localScale = _initialScale.Value;
+                transform.DOScale(_initialScale.Value, time);
                 yield return waiter;
             }
         }

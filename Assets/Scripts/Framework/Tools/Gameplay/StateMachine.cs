@@ -6,24 +6,25 @@ namespace Framework.Tools.Gameplay
     public class StateMachine<T> where T : struct, IConvertible
     {
         private readonly Dictionary<T, Dictionary<T, Action>> _transitions;
-        private T _currentState;
+
+        public T CurrentState { get; private set; }
 
         public StateMachine()
         {
             if (!typeof(T).IsEnum)
             {
-                throw new Exception(string.Format("{0} is not a enum type. Can't create a state machine", typeof(T).Name));
+                throw new Exception(string.Format("{0} is not an enum. Can't create a state machine", typeof(T).Name));
             }
 
             _transitions = new Dictionary<T, Dictionary<T, Action>>();
 
             var states = (T[]) Enum.GetValues(typeof(T));
-            _currentState = states[0];
+            CurrentState = states[0];
         }
 
         public StateMachine(T initialState) : this()
         {
-            _currentState = initialState;
+            CurrentState = initialState;
         }
 
         public void AddTransition(T stateA, T stateB, Action action)
@@ -42,12 +43,12 @@ namespace Framework.Tools.Gameplay
         {
             Action action = null;
             Dictionary<T, Action> stateTransitions;
-            if (_transitions.TryGetValue(_currentState, out stateTransitions))
+            if (_transitions.TryGetValue(CurrentState, out stateTransitions))
             {
                 stateTransitions.TryGetValue(state, out action);
             }
 
-            _currentState = state;
+            CurrentState = state;
 
             if (action != null)
             {
@@ -55,14 +56,9 @@ namespace Framework.Tools.Gameplay
             }
         }
 
-        public T GetCurrentState()
-        {
-            return _currentState;
-        }
-
         public bool IsInState(T state)
         {
-            return _currentState.Equals(state);
+            return CurrentState.Equals(state);
         }
     }
 }

@@ -1,14 +1,16 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace Framework.Tools.Gameplay
 {
-    public class Pool<T> where T : Component
+    public class Pool<T> : IDisposable where T : Component
     {
-        private readonly T _itemPrefab;
-        private readonly Transform _poolRoot;
-        private readonly Transform _parentObject;
-        private readonly Queue<T> _itemsQueue;
+        private T _itemPrefab;
+        private Transform _parentObject;
+        private Transform _poolRoot;
+        private Queue<T> _itemsQueue;
 
         public int Count
         {
@@ -59,6 +61,21 @@ namespace Framework.Tools.Gameplay
             item.transform.SetParent(_poolRoot);
 
             _itemsQueue.Enqueue(item);
+        }
+
+        public void Dispose()
+        {
+            foreach (var item in _itemsQueue)
+            {
+                Object.Destroy(item.gameObject);
+            }
+
+            Object.Destroy(_poolRoot.gameObject);
+
+            _itemPrefab = null;
+            _parentObject = null;
+            _poolRoot = null;
+            _itemsQueue = null;
         }
     }
 }

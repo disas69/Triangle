@@ -3,8 +3,9 @@
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
@@ -13,6 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   RotationSpeed: {fileID: 11400000, guid: 7c9370c721da1c8499d6053a67c076f7, type: 2}
   RotateToLineTime: 0.8
-  ScaleChangeTime: 0.4
-  ScaleMultiplier: 1.2
-  MoveSmoothing: 0.1
+  ScaleChangeTime: 0.5
+  ScaleMultiplier: 1.25
+  MoveSpeed: 20
+  FixSpeed: 10
+  Deceleration: 0.1
+  MoveSmoothing: 0.25
+  FixSmoothing: 0.15

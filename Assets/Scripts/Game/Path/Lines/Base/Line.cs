@@ -1,4 +1,5 @@
 ﻿using System;
+using Assets.Scripts.Game;
 using Framework.Extensions;
 using Game.Path.Configuration;
 using UnityEngine;
@@ -9,6 +10,7 @@ namespace Game.Path.Lines.Base
     {
         private MeshRenderer _meshRenderer;
         private BoxCollider _boxCollider;
+        private Animation _animation;
         private bool _isVisible;
         private bool _isTriggered;
         private bool _isPassed;
@@ -31,6 +33,11 @@ namespace Game.Path.Lines.Base
             get { return _meshRenderer; }
         }
 
+        public Vector3 StartPointPosition
+        {
+            get { return _startPoint.position; }
+        }
+
         public Vector3 EndPointPosition
         {
             get { return _endPoint.position; }
@@ -41,7 +48,6 @@ namespace Game.Path.Lines.Base
             get { return _isTriggered; }
             set
             {
-                _meshRenderer.material = value ? _tempMaterial : _defaultMaterial;
                 _isTriggered = value;
 
                 if (_isTriggered)
@@ -56,7 +62,6 @@ namespace Game.Path.Lines.Base
             get { return _isPassed; }
             set
             {
-                _meshRenderer.material = value ? _passedMaterial : _defaultMaterial;
                 _isPassed = value;
 
                 if (_isPassed)
@@ -79,6 +84,11 @@ namespace Game.Path.Lines.Base
             transform.localEulerAngles = new Vector3(0f, settings.RotationAngle, 0f);
 
             Countable = settings.Countable;
+            if (!Countable)
+            {
+                _meshRenderer.sharedMaterial = _passedMaterial;
+            }
+
             IsTriggered = false;
             IsPassed = false;
         }
@@ -90,20 +100,49 @@ namespace Game.Path.Lines.Base
 
             if (transform.position.z < 0)
             {
-                _meshRenderer.material = _passedMaterial;
+                _meshRenderer.sharedMaterial = _passedMaterial;
             }
         }
 
-        public void SetProgress(Vector3 trianglePosition)
+        public virtual void SetProgress(Vector3 position)
         {
-            var passedPathLength = (_startPoint.position - trianglePosition).magnitude;
-            _meshRenderer.material.Lerp(_defaultMaterial, _passedMaterial, passedPathLength / _length);
+            if (!Countable)
+            {
+                return;
+            }
+
+            var passedPathLength = GetPassedLength(position, this);
+            var ratio = passedPathLength / _length;
+
+            _meshRenderer.sharedMaterial.Lerp(_defaultMaterial, _passedMaterial, ratio);
+        }
+
+        public void ChangeMaterial()
+        {
+            _meshRenderer.sharedMaterial = _passedMaterial;
+        }
+
+        private float GetPassedLength(Vector3 position, Line line)
+        {
+            var a = Vector2.Distance(new Vector2(position.x, position.z),
+                new Vector2(line.StartPointPosition.x, line.StartPointPosition.z));
+            var b = MathUtils.GetDistanceToSegment(new Vector2(position.x, position.z),
+                new Vector2(line.StartPointPosition.x, line.StartPointPosition.z),
+                new Vector2(line.EndPointPosition.x, line.EndPointPosition.z));
+
+            if (b > 0)
+            {
+                return Mathf.Sqrt(a * a + b * b);
+            }
+
+            return 0;
         }
 
         protected virtual void Awake()
         {
             _meshRenderer = GetComponent<MeshRenderer>();
             _boxCollider = GetComponent<BoxCollider>();
+            _animation = GetComponentInChildren<Animation>(true);
             _isVisible = _meshRenderer.isVisible;
 
             if (_isVisible)
@@ -135,6 +174,12 @@ namespace Game.Path.Lines.Base
 
         protected virtual void OnEnable()
         {
+            _meshRenderer.sharedMaterial = _defaultMaterial;
+
+            if (_animation != null)
+            {
+                _animation.gameObject.SetActive(false);
+            }
         }
 
         protected virtual void OnDisable()
@@ -143,10 +188,24 @@ namespace Game.Path.Lines.Base
 
         protected virtual void OnLineTriggered()
         {
+            if (Countable)
+            {
+                _meshRenderer.sharedMaterial = _tempMaterial;
+            }
         }
 
         protected virtual void OnLinePassed()
         {
+            _meshRenderer.sharedMaterial = _passedMaterial;
+
+            if (Countable)
+            {
+                if (_animation != null)
+                {
+                    _animation.gameObject.SetActive(true);
+                    _animation.Play();
+                }
+            }
         }
 
         protected virtual void OnLineBecameVisible()

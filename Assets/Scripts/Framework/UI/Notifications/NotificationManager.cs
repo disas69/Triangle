@@ -25,7 +25,7 @@ namespace Framework.UI.Notifications
         {
             if (_instance != null)
             {
-                Hide(notification.Type);
+                Hide(notification.Type, true);
 
                 var notificationView = _instance.Configuration.GetNotificationView(notification.Type);
                 if (notificationView != null)
@@ -47,14 +47,14 @@ namespace Framework.UI.Notifications
             }
         }
 
-        public static void Hide(NotificationType type)
+        public static void Hide(NotificationType type, bool immediately)
         {
             NotificationView notification;
             if (_activeNotification.TryGetValue(type, out notification))
             {
                 if (notification != null)
                 {
-                    notification.Hide();
+                    notification.Hide(immediately);
                 }
             }
 
@@ -67,7 +67,7 @@ namespace Framework.UI.Notifications
             {
                 if (notificationView.Value != null)
                 {
-                    notificationView.Value.Hide();
+                    notificationView.Value.Hide(true);
                 }
             }
 

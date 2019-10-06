@@ -10,11 +10,11 @@ namespace Framework.UI.Structure.Base
     {
         private CanvasGroup _canvasGroup;
         private Coroutine _transitionCoroutine;
-        private INavigationProvider _navigationProvider;
+        private INavigationManager _navigationManager;
 
         [SerializeField] private bool _inTransition = true;
         [SerializeField] private bool _outTransition = true;
-        [SerializeField] private float _transitionSpeed;
+        [SerializeField] private float _transitionSpeed = 1f;
 
         public bool IsInTransition
         {
@@ -26,7 +26,58 @@ namespace Framework.UI.Structure.Base
             _canvasGroup = GetComponent<CanvasGroup>();
         }
 
-        protected virtual IEnumerator InTransition()
+        public void Initialize(INavigationManager navigationManager)
+        {
+            _navigationManager = navigationManager;
+        }
+
+        public virtual void Close()
+        {
+            _navigationManager.Back();
+        }
+
+        public virtual void OnEnter()
+        {
+            gameObject.SetActive(true);
+
+            this.SafeStopCoroutine(_transitionCoroutine);
+            _transitionCoroutine = null;
+
+            if (_inTransition)
+            {
+                _transitionCoroutine = StartCoroutine(InTransition(Activate));
+            }
+            else
+            {
+                Activate();
+            }
+        }
+
+        public virtual void OnExit()
+        {
+            this.SafeStopCoroutine(_transitionCoroutine);
+            _transitionCoroutine = null;
+
+            if (_outTransition)
+            {
+                _transitionCoroutine = StartCoroutine(OutTransition(Deactivate));
+            }
+            else
+            {
+                Deactivate();
+            }
+        }
+
+        protected virtual void Activate()
+        {
+        }
+
+        protected virtual void Deactivate()
+        {
+            gameObject.SetActive(false);
+        }
+
+        protected virtual IEnumerator InTransition(Action callback)
         {
             if (_canvasGroup == null)
             {
@@ -42,6 +93,7 @@ namespace Framework.UI.Structure.Base
             }
 
             _transitionCoroutine = null;
+            callback.SafeInvoke();
         }
 
         protected virtual IEnumerator OutTransition(Action callback)
@@ -61,57 +113,6 @@ namespace Framework.UI.Structure.Base
 
             _transitionCoroutine = null;
             callback.SafeInvoke();
-        }
-
-        public void Initialize(INavigationProvider navigationProvider)
-        {
-            _navigationProvider = navigationProvider;
-        }
-
-        public virtual void OnEnter()
-        {
-            gameObject.SetActive(true);
-
-            this.SafeStopCoroutine(_transitionCoroutine);
-            _transitionCoroutine = null;
-
-            if (_inTransition)
-            {
-                _transitionCoroutine = StartCoroutine(InTransition());
-            }
-        }
-
-        public virtual void Update()
-        {
-        }
-
-        public virtual void Close()
-        {
-            _navigationProvider.Back();
-        }
-
-        public virtual void OnExit()
-        {
-            this.SafeStopCoroutine(_transitionCoroutine);
-            _transitionCoroutine = null;
-
-            if (_outTransition)
-            {
-                _transitionCoroutine = StartCoroutine(OutTransition(Deactivate));
-            }
-            else
-            {
-                Deactivate();
-            }
-        }
-
-        protected virtual void Deactivate()
-        {
-            gameObject.SetActive(false);
-        }
-
-        public virtual void OnDestroy()
-        {
         }
     }
 }

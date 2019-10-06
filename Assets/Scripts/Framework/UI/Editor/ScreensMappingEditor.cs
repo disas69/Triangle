@@ -14,7 +14,7 @@ namespace Framework.UI.Editor
 
             EditorGUILayout.BeginVertical(GUI.skin.box);
             {
-                EditorGUILayout.LabelField("Pages Mapping", HeaderStyle);
+                EditorGUILayout.LabelField("Pages", HeaderStyle);
                 if (GUILayout.Button("Add page"))
                 {
                     RecordObject("Screens Mapping Change");
@@ -55,7 +55,7 @@ namespace Framework.UI.Editor
 
             EditorGUILayout.BeginVertical(GUI.skin.box);
             {
-                EditorGUILayout.LabelField("Popups Mapping", HeaderStyle);
+                EditorGUILayout.LabelField("Popups", HeaderStyle);
                 if (GUILayout.Button("Add popup"))
                 {
                     RecordObject("Screens Mapping Change");

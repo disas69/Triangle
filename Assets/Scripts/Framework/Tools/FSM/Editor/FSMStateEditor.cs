@@ -1,4 +1,5 @@
 ﻿using Framework.Editor;
+using Framework.Editor.GUIUtilities;
 using UnityEditor;
 using UnityEngine;
 
@@ -11,7 +12,7 @@ namespace Framework.Tools.FSM.Editor
         {
             base.DrawInspector();
 
-            EditorGUILayout.BeginVertical(GUI.skin.box);
+            EditorGUILayout.BeginVertical();
             {
                 EditorGUILayout.LabelField(string.Format("FSMState: {0}", Target.name), HeaderStyle);
                 EditorGUILayout.BeginVertical(GUI.skin.box);
@@ -24,12 +25,19 @@ namespace Framework.Tools.FSM.Editor
                     {
                         var action = serializedObject.FindProperty("_action");
                         EditorGUILayout.PropertyField(action);
+
+                        if (action.objectReferenceValue != null)
+                        {
+                            var editor = CreateEditor(action.objectReferenceValue);
+                            using (new GUIIndent())
+                            {
+                                editor.OnInspectorGUI();
+                            }
+                        }
                     }
                     EditorGUILayout.EndVertical();
-                    EditorGUILayout.Space();
 
                     EditorGUILayout.LabelField("Transitions", LabelStyle);
-
                     if (GUILayout.Button("Add transition"))
                     {
                         RecordObject("FSMState Change");
@@ -37,7 +45,7 @@ namespace Framework.Tools.FSM.Editor
                     }
 
                     var transitions = serializedObject.FindProperty("_transitions");
-                    for (int i = 0; i < transitions.arraySize; i++)
+                    for (var i = 0; i < transitions.arraySize; i++)
                     {
                         EditorGUILayout.BeginHorizontal(GUI.skin.box);
                         {
@@ -50,13 +58,20 @@ namespace Framework.Tools.FSM.Editor
                                 var transitionName = "None";
                                 if (condition.objectReferenceValue != null && state.objectReferenceValue != null)
                                 {
-                                    transitionName = string.Format("{0}. Transition: {1} -> {2}", i + 1,
-                                        condition.objectReferenceValue.name, state.objectReferenceValue.name);
+                                    transitionName = string.Format("{0}. Transition: {1} -> {2}", i + 1, condition.objectReferenceValue.name, state.objectReferenceValue.name);
                                 }
 
                                 EditorGUILayout.LabelField(transitionName);
-                                EditorGUILayout.PropertyField(condition);
                                 EditorGUILayout.PropertyField(state);
+                                EditorGUILayout.PropertyField(condition);
+                                if (condition.objectReferenceValue != null)
+                                {
+                                    var editor = CreateEditor(condition.objectReferenceValue);
+                                    using (new GUIIndent())
+                                    {
+                                        editor.OnInspectorGUI();
+                                    }
+                                }
                             }
                             EditorGUILayout.EndVertical();
 
@@ -67,7 +82,6 @@ namespace Framework.Tools.FSM.Editor
                             }
                         }
                         EditorGUILayout.EndHorizontal();
-                        EditorGUILayout.Space();
                     }
                 }
                 EditorGUILayout.EndVertical();

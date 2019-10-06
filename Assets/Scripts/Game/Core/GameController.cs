@@ -1,49 +1,49 @@
-﻿using Framework.Tools.Gameplay;
+﻿using Framework.Extensions;
+using Framework.Input;
+using Framework.Tasking;
+using Framework.Tools.Gameplay;
 using Framework.Tools.Singleton;
 using Framework.UI;
-using Framework.Utils;
+using Framework.Utils.Positioning;
 using Game.Audio;
 using Game.Core.Structure;
-using Game.Input;
 using Game.Path;
 using Game.Triangle;
 using Game.UI.Screens.Play;
 using Game.UI.Screens.Replay;
 using Game.UI.Screens.Start;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 namespace Game.Core
 {
     public class GameController : MonoSingleton<GameController>
     {
         private GameSession _gameSession;
-        private SceneSnapshot _sceneSnapshot;
-        private StateMachine<GameState> _gameStateMachine;
-        private TriangleController _triangleController;
+        private PlayerController _player;
+        private PositionsSnapshot _positionsSnapshot;
+        private StateMachine<GameState> _stateMachine;
+        private Task _playerActivationTask;
 
-        [SerializeField] private InputProvider _inputProvider;
-        [SerializeField] private NavigationProvider _navigationProvider;
-        [SerializeField] private AudioEffectsProvider _audioEffectsProvider;
-        [SerializeField] private TriangleController _trianglePrefab;
+        [SerializeField] private PlayerController _playerPrefab;
         [SerializeField] private PathController _pathController;
+        [SerializeField] private AudioEffects _audioEffects;
         [SerializeField] private Camera _camera;
-        [SerializeField] private Transform _dynamicObjects;
+        [SerializeField] private Transform _scene;
+        [SerializeField] private GameSettings _settings;
 
-        public GameSession GameSession
-        {
-            get { return _gameSession; }
-        }
+        public GameSettings Settings => _settings;
+        public GameSession Session => _gameSession;
+        public PathController Path => _pathController;
 
         private void Start()
         {
-            UnityEngine.Input.multiTouchEnabled = false;
-
             _gameSession = new GameSession();
-            _sceneSnapshot = new SceneSnapshot(_dynamicObjects);
-            _sceneSnapshot.Save();
+            _positionsSnapshot = new PositionsSnapshot(_scene);
+            _positionsSnapshot.Save();
+            _stateMachine = CreateStateMachine();
 
-            _gameStateMachine = CreateStateMachine();
-            _inputProvider.PointerDown += OnPointerDown;
+            InputEventProvider.Instance.PointerDown += OnPointerDown;
 
             IdleState();
         }
@@ -58,7 +58,7 @@ namespace Game.Core
             return stateMachine;
         }
 
-        private void OnPointerDown(Vector3 vector)
+        private void OnPointerDown(PointerEventData pointerEventData)
         {
             if (_gameSession.IsPlaying)
             {
@@ -67,21 +67,21 @@ namespace Game.Core
 
             if (_gameSession.ReadyToPlay)
             {
-                _gameStateMachine.SetState(GameState.Play);
+                _stateMachine.SetState(GameState.Play);
             }
             else
             {
-                _sceneSnapshot.Restore();
-                _gameStateMachine.SetState(GameState.Idle);
+                _positionsSnapshot.Restore();
+                _stateMachine.SetState(GameState.Idle);
             }
         }
 
-        private void OnTriangleLineTouched()
+        private void OnLineTouched()
         {
-            _gameStateMachine.SetState(GameState.Stop);
+            _stateMachine.SetState(GameState.Stop);
         }
 
-        private void OnTriangleLinePassed()
+        private void OnLinePassed()
         {
             _gameSession.IncreaseScore();
         }
@@ -90,60 +90,68 @@ namespace Game.Core
         {
             _gameSession.Idle();
             _pathController.Idle();
-            _audioEffectsProvider.Play();
-            _navigationProvider.OpenScreen<StartPage>();
+            _audioEffects.Play();
 
-            SpawnTriangle();
+            if (_player != null)
+            {
+                _player.LinePassed -= OnLinePassed;
+                _player.LineTouched -= OnLineTouched;
+                Destroy(_player.gameObject);
+            }
+
+            _player = SpawnTriangle();
+
+            NavigationManager.Instance.OpenScreen<StartPage>();
         }
 
         private void PlayState()
         {
             _gameSession.Play();
             _pathController.Play();
-            _navigationProvider.OpenScreen<PlayPage>();
+
+            _playerActivationTask = new WaitTask(this, _settings.ActivationTime, () => _player.Activate(true));
+            _playerActivationTask.Start();
+
+            NavigationManager.Instance.OpenScreen<PlayPage>();
         }
 
         private void StopState()
         {
             _gameSession.Stop();
             _pathController.Stop();
-            _audioEffectsProvider.Stop();
-            _navigationProvider.OpenScreen<ReplayPage>();
+            _audioEffects.Stop();
+
+            _playerActivationTask.Stop();
+            _player.Activate(false);
+
+            NavigationManager.Instance.OpenScreen<ReplayPage>();
         }
 
-        private void SpawnTriangle()
+        private PlayerController SpawnTriangle()
         {
-            if (_triangleController != null)
-            {
-                _triangleController.LinePassed -= OnTriangleLinePassed;
-                _triangleController.LineTouched -= OnTriangleLineTouched;
-
-                Destroy(_triangleController.gameObject);
-            }
-
-            _triangleController = Instantiate(_trianglePrefab, transform);
-            _triangleController.SetupInput(_inputProvider);
-
-            _triangleController.transform.position = Vector3.zero;
-            _triangleController.LinePassed += OnTriangleLinePassed;
-            _triangleController.LineTouched += OnTriangleLineTouched;
+            var triangle = Instantiate(_playerPrefab, transform);
+            triangle.transform.position = Vector3.zero;
+            triangle.LinePassed += OnLinePassed;
+            triangle.LineTouched += OnLineTouched;
 
             var cameraFollower = _camera.GetComponent<TargetFollower>();
             if (cameraFollower != null)
             {
-                cameraFollower.SetTarget(_triangleController.transform);
+                cameraFollower.SetTarget(triangle.transform);
             }
+
+            return triangle;
         }
 
         private void OnDestroy()
         {
             _gameSession.GameData.Save();
-            _inputProvider.PointerDown -= OnPointerDown;
+            InputEventProvider.Instance.PointerDown -= OnPointerDown;
 
-            if (_triangleController != null)
+            if (_player != null)
             {
-                _triangleController.LinePassed -= OnTriangleLinePassed;
-                _triangleController.LineTouched -= OnTriangleLineTouched;
+                _player.LinePassed -= OnLinePassed;
+                _player.LineTouched -= OnLineTouched;
             }
         }
     }

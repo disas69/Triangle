@@ -22,6 +22,16 @@ namespace Framework.Tools.Singleton
                     else
                     {
                         _instance = Resources.Load<T>(filePath);
+#if UNITY_EDITOR
+                        if (_instance == null)
+                        {
+                            var assets = UnityEditor.AssetDatabase.LoadAllAssetsAtPath(filePath);
+                            if (assets.Length > 0)
+                            {
+                                _instance = (T)assets[0];
+                            }
+                        }
+#endif
                     }
                 }
 

@@ -14,7 +14,7 @@ namespace Framework.Utils.Positioning
             _initialPositions = new List<Vector3>(_root.childCount);
         }
 
-        public void SavePositions()
+        public void Save()
         {
             for (int i = 0; i < _root.childCount; i++)
             {
@@ -23,7 +23,7 @@ namespace Framework.Utils.Positioning
             }
         }
 
-        public void RestorePositions()
+        public void Restore()
         {
             for (int i = 0; i < _root.childCount; i++)
             {
